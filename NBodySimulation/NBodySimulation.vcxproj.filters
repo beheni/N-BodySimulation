@@ -22,6 +22,14 @@
     <ClCompile Include="NBodySim\src\WinMain.cpp">
       <Filter>source files</Filter>
     </ClCompile>
+    <ClCompile Include="NBodySim\src\FragmentShader.cpp" />
+    <ClCompile Include="NBodySim\src\VertexShader.cpp" />
+    <ClCompile Include="NBodySim\src\Window.cpp" />
+    <ClCompile Include="NBodySim\src\Camera.cpp" />
+    <ClCompile Include="NBodySim\src\Renderer.cpp" />
+    <ClCompile Include="NBodySim\src\Mesh.cpp" />
+    <ClCompile Include="NBodySim\src\Texture.cpp" />
+    <ClCompile Include="NBodySim\src\ComputeShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\include\glm\detail\_features.hpp">
@@ -945,6 +953,14 @@
     <ClInclude Include="external\include\glm\gtx\wrap.hpp">
       <Filter>externals</Filter>
     </ClInclude>
+    <ClInclude Include="NBodySim\include\FragmentShader.h" />
+    <ClInclude Include="NBodySim\include\VertexShader.h" />
+    <ClInclude Include="NBodySim\include\Window.h" />
+    <ClInclude Include="NBodySim\include\Camera.h" />
+    <ClInclude Include="NBodySim\include\Renderer.h" />
+    <ClInclude Include="NBodySim\include\Mesh.h" />
+    <ClInclude Include="NBodySim\include\Texture.h" />
+    <ClInclude Include="NBodySim\include\ComputeShader.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="external\lib\glew32.lib">

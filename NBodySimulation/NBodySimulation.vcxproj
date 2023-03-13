@@ -85,9 +85,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\NBodySim\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\NBodySim\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -138,7 +140,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)\external\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;glew32.lib;soil2-debug.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RegisterOutput>true</RegisterOutput>
     </Link>
   </ItemDefinitionGroup>
@@ -159,18 +161,26 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)\external\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;glew32.lib;soil2-debug.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RegisterOutput>true</RegisterOutput>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="NBodySim\src\ComputeShader.cpp" />
+    <ClCompile Include="NBodySim\src\Camera.cpp" />
     <ClCompile Include="external\include\glm\detail\glm.cpp" />
     <ClCompile Include="external\include\SOIL2\image_DXT.c" />
     <ClCompile Include="external\include\SOIL2\image_helper.c" />
     <ClCompile Include="external\include\SOIL2\SOIL2.c" />
     <ClCompile Include="external\include\SOIL2\wfETC.c" />
+    <ClCompile Include="NBodySim\src\FragmentShader.cpp" />
+    <ClCompile Include="NBodySim\src\Mesh.cpp" />
     <ClCompile Include="NBodySim\src\glad.c" />
     <ClCompile Include="NBodySim\src\WinMain.cpp" />
+    <ClCompile Include="NBodySim\src\Renderer.cpp" />
+    <ClCompile Include="NBodySim\src\Texture.cpp" />
+    <ClCompile Include="NBodySim\src\VertexShader.cpp" />
+    <ClCompile Include="NBodySim\src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="external\lib\glew32.lib" />
@@ -178,6 +188,8 @@
     <Library Include="external\lib\soil2-debug.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NBodySim\include\ComputeShader.h" />
+    <ClInclude Include="NBodySim\include\Camera.h" />
     <ClInclude Include="external\include\glad\glad.h" />
     <ClInclude Include="external\include\GLFW\glfw3.h" />
     <ClInclude Include="external\include\GLFW\glfw3native.h" />
@@ -485,6 +497,12 @@
     <ClInclude Include="external\include\SOIL2\stb_image.h" />
     <ClInclude Include="external\include\SOIL2\stb_image_write.h" />
     <ClInclude Include="external\include\SOIL2\wfETC.h" />
+    <ClInclude Include="NBodySim\include\FragmentShader.h" />
+    <ClInclude Include="NBodySim\include\Mesh.h" />
+    <ClInclude Include="NBodySim\include\Renderer.h" />
+    <ClInclude Include="NBodySim\include\Texture.h" />
+    <ClInclude Include="NBodySim\include\VertexShader.h" />
+    <ClInclude Include="NBodySim\include\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="external\include\glm\detail\func_common.inl" />
