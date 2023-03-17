@@ -1,4 +1,6 @@
 #include "RenderShader.h"
+#include "Exception.h"
+
 #include <sstream>
 #include <fstream>
 
@@ -25,7 +27,7 @@ RenderShader::RenderShader(const std::string& vertexSourcePath, const std::strin
     }
     catch (std::ifstream::failure e)
     {
-        // throw error
+        throw EXCEPTION(e.what());
     }
     const char* cStringVertexShader = vertexShaderString.c_str();
     const char* cStringFragmentShader = fragmentShaderString.c_str();
@@ -34,13 +36,18 @@ RenderShader::RenderShader(const std::string& vertexSourcePath, const std::strin
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(vertexShader, 1, &cStringVertexShader, NULL);
     glShaderSource(fragmentShader, 1, &cStringFragmentShader, NULL);
+
     glCompileShader(vertexShader);
+    CheckCompilation(vertexShader);
     glCompileShader(fragmentShader);
+    CheckCompilation(fragmentShader);
 
     m_ShaderProgram = glCreateProgram();
     glAttachShader(m_ShaderProgram, vertexShader);
     glAttachShader(m_ShaderProgram, fragmentShader);
     glLinkProgram(m_ShaderProgram);
+    CheckLinking(m_ShaderProgram);
+
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 }
@@ -50,7 +57,7 @@ RenderShader::~RenderShader()
     glDeleteProgram(m_ShaderProgram);
 }
 
-void RenderShader::Use()
+void RenderShader::Use() const
 {
     glUseProgram(m_ShaderProgram);
 }

@@ -166,6 +166,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="NBodySim\src\Exception.cpp" />
     <ClCompile Include="NBodySim\src\ComputeShader.cpp" />
     <ClCompile Include="NBodySim\src\Camera.cpp" />
     <ClCompile Include="external\include\glm\detail\glm.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="NBodySim\src\Texture.cpp" />
     <ClCompile Include="NBodySim\src\Window.cpp" />
     <ClCompile Include="NBodySim\src\RenderShader.cpp" />
+    <ClCompile Include="NBodySim\src\ShaderBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="external\lib\glew32.lib" />
@@ -187,6 +189,7 @@
     <Library Include="external\lib\soil2-debug.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NBodySim\include\Exception.h" />
     <ClInclude Include="NBodySim\include\ComputeShader.h" />
     <ClInclude Include="NBodySim\include\Camera.h" />
     <ClInclude Include="external\include\glad\glad.h" />
@@ -503,6 +506,7 @@
     <ClInclude Include="NBodySim\include\Window.h" />
     <ClInclude Include="NBodySim\include\VertexBufferLayout.h" />
     <ClInclude Include="NBodySim\include\RenderShader.h" />
+    <ClInclude Include="NBodySim\include\ShaderBase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="external\include\glm\detail\func_common.inl" />

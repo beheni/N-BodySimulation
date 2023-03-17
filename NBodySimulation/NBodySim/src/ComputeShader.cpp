@@ -1,4 +1,6 @@
 #include "ComputeShader.h"
+#include "Exception.h"
+
 #include <sstream>
 #include <fstream>
 
@@ -18,20 +20,21 @@ ComputeShader::ComputeShader(const std::string& sourceFile)
     }
     catch (std::ifstream::failure e)
     {
-        // throw error
+        throw EXCEPTION(e.what());
     }
     const char* cStringShader = shaderString.c_str();
 
     GLuint shader = glCreateShader(GL_COMPUTE_SHADER);
     glShaderSource(shader, 1, &cStringShader, NULL);
     glCompileShader(shader);
+    CheckCompilation(shader);
 
     m_ShaderProgram = glCreateProgram();
     glAttachShader(m_ShaderProgram, shader);
     glLinkProgram(m_ShaderProgram);
-    glDeleteShader(shader);
+    CheckLinking(m_ShaderProgram);
 
-    // TODO: check compilation and linking
+    glDeleteShader(shader);
 }
 
 ComputeShader::~ComputeShader()
@@ -39,7 +42,7 @@ ComputeShader::~ComputeShader()
     glDeleteProgram(m_ShaderProgram);
 }
 
-void ComputeShader::Use()
+void ComputeShader::Use() const
 {
     glUseProgram(m_ShaderProgram);
 }

@@ -1,16 +1,15 @@
 #pragma once
+#include "ShaderBase.h"
+
 #include <glad/glad.h>
 #include <string>
 
-class ComputeShader
+class ComputeShader : public ShaderBase
 {
 public:
 	ComputeShader(const std::string& sourceFile);
-	~ComputeShader();
+	~ComputeShader() override;
 
-	void Use();
-
-private:
-	GLuint m_ShaderProgram;
+	void Use() const override;
 };
 
