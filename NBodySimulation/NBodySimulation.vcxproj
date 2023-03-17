@@ -74,22 +74,22 @@
     <LinkIncremental>true</LinkIncremental>
     <ExternalIncludePath>
     </ExternalIncludePath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\NBodySim\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ExternalIncludePath)</ExternalIncludePath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\NBodySim\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\NBodySim\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\NBodySim\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,7 +97,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\external\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\NBodySim\include\;$(ProjectDir)\external\include\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -115,7 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\external\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\NBodySim\include\;$(ProjectDir)\external\include\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -133,7 +133,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\external\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\NBodySim\include\;$(ProjectDir)\external\include\</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
@@ -152,7 +152,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\external\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\NBodySim\include\;$(ProjectDir)\external\include\</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
@@ -173,14 +173,13 @@
     <ClCompile Include="external\include\SOIL2\image_helper.c" />
     <ClCompile Include="external\include\SOIL2\SOIL2.c" />
     <ClCompile Include="external\include\SOIL2\wfETC.c" />
-    <ClCompile Include="NBodySim\src\FragmentShader.cpp" />
     <ClCompile Include="NBodySim\src\Mesh.cpp" />
     <ClCompile Include="NBodySim\src\glad.c" />
     <ClCompile Include="NBodySim\src\WinMain.cpp" />
     <ClCompile Include="NBodySim\src\Renderer.cpp" />
     <ClCompile Include="NBodySim\src\Texture.cpp" />
-    <ClCompile Include="NBodySim\src\VertexShader.cpp" />
     <ClCompile Include="NBodySim\src\Window.cpp" />
+    <ClCompile Include="NBodySim\src\RenderShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="external\lib\glew32.lib" />
@@ -497,12 +496,13 @@
     <ClInclude Include="external\include\SOIL2\stb_image.h" />
     <ClInclude Include="external\include\SOIL2\stb_image_write.h" />
     <ClInclude Include="external\include\SOIL2\wfETC.h" />
-    <ClInclude Include="NBodySim\include\FragmentShader.h" />
     <ClInclude Include="NBodySim\include\Mesh.h" />
     <ClInclude Include="NBodySim\include\Renderer.h" />
+    <ClInclude Include="NBodySim\include\SafeWindows.h" />
     <ClInclude Include="NBodySim\include\Texture.h" />
-    <ClInclude Include="NBodySim\include\VertexShader.h" />
     <ClInclude Include="NBodySim\include\Window.h" />
+    <ClInclude Include="NBodySim\include\VertexBufferLayout.h" />
+    <ClInclude Include="NBodySim\include\RenderShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="external\include\glm\detail\func_common.inl" />
@@ -641,6 +641,8 @@
     <None Include="external\include\glm\gtx\vector_angle.inl" />
     <None Include="external\include\glm\gtx\vector_query.inl" />
     <None Include="external\include\glm\gtx\wrap.inl" />
+    <None Include="NBodySim\data\shaders\shader.frag" />
+    <None Include="NBodySim\data\shaders\shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
