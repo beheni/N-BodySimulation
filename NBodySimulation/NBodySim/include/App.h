@@ -8,6 +8,7 @@
 #include "Exception.h"
 #include "Window.h"
 #include "Camera.h"
+#include "Mouse.h""
 #include "Clock.h"
 #include "Mesh.h"
 
@@ -30,5 +31,6 @@ private:
 	std::unique_ptr<RenderShader> m_RenderShader;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;
+	std::unique_ptr<Mouse> m_Mouse;
 	std::unique_ptr<Mesh> m_Mesh;
 };

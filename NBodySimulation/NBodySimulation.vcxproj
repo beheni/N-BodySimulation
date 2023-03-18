@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="NBodySim\src\Mouse.cpp" />
     <ClCompile Include="NBodySim\src\Clock.cpp" />
     <ClCompile Include="NBodySim\src\App.cpp" />
     <ClCompile Include="NBodySim\src\Exception.cpp" />
@@ -193,6 +194,7 @@
     <Library Include="external\lib\soil2-debug.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NBodySim\include\Mouse.h" />
     <ClInclude Include="NBodySim\include\Clock.h" />
     <ClInclude Include="NBodySim\include\App.h" />
     <ClInclude Include="NBodySim\include\Exception.h" />

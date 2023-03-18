@@ -12,6 +12,9 @@ App::App()
     m_RenderShader = std::make_unique<RenderShader>("./NBodySim/data/shaders/shader.vert", "./NBodySim/data/shaders/shader.frag");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), 75.0f, 4.0f / 3.0f, 0.1f, 100.0f);
     m_Mesh = std::make_unique<Mesh>(100);
+    m_Mouse = std::make_unique<Mouse>(m_Window->Get());
+
+    m_Mouse->DisableCursor(m_Window->Get());
 }
 
 App::~App()
@@ -26,6 +29,7 @@ void App::Run()
     while (m_Window->Open())
     {
         float deltaTime = m_Clock.Stamp();
+
         // Processing user input
         ProcessEvents(deltaTime);
 
@@ -42,8 +46,7 @@ void App::DoFrame(float dt)
     m_RenderShader->Use();
 
     m_RenderShader->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
-    m_RenderShader->SetMat4x4("Projection", m_Camera->GetProjectionMatrix());
-    m_RenderShader->SetMat4x4("View", m_Camera->GetViewMatrix());
+    m_RenderShader->SetMat4x4("ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     m_RenderShader->SetMat4x4("Model", glm::identity<glm::mat4x4>());
 
     m_Window->Clear(0.7f, 0.2f, 0.4f);
@@ -71,6 +74,10 @@ void App::ProcessEvents(float dt)
         m_Camera->Move(CamDir::Down, dt);
 
     // Camera rotation
+    glm::vec2 mouseOffset = m_Mouse->GetOffset(m_Window->Get());
+    const float sensitivity = 0.03f;
+    m_Camera->Rotate(- dt * mouseOffset.y * sensitivity, glm::vec3(1.0f, 0.0f, 0.0f));
+    m_Camera->Rotate(- dt * mouseOffset.x * sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void App::PollEvents(float dt)

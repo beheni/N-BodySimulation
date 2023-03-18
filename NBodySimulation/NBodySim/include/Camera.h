@@ -26,6 +26,7 @@ public:
     void SetSpeed(float speed);
     void Move(Direction diretion, float dt);
     void Rotate(float angle, const glm::vec3& axis);
+    void ProcessMouseInput(const glm::vec2& mouseOffset);
     void SetFOV(float fov);
     void SetAspectRatio(float aspectRatio);
     void SetNear(float near);

@@ -69,6 +69,10 @@ void Camera::Rotate(float angle, const glm::vec3& axis)
     RecalculateVectors();
 }
 
+void Camera::ProcessMouseInput(const glm::vec2& mouseOffset)
+{
+}
+
 void Camera::SetFOV(float fov)
 {
     m_Fov = fov;
