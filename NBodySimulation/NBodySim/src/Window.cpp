@@ -34,6 +34,7 @@ Window::Window(int width, int height, const char* title, bool fullscreen)
     }
 
     glViewport(0, 0, m_Width, m_Height);
+    glEnable(GL_DEPTH_TEST);
 }
 
 Window::~Window()
@@ -51,6 +52,11 @@ bool Window::Open() const
     return !glfwWindowShouldClose(m_Window);
 }
 
+float Window::GetAspectRation() const
+{
+    return static_cast<float>(m_Width) / static_cast<float>(m_Height);
+}
+
 void Window::SwapBuffers()
 {
     glfwSwapBuffers(m_Window);
@@ -59,7 +65,7 @@ void Window::SwapBuffers()
 void Window::Clear(float r, float g, float b)
 {
     glClearColor(r, g, b, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::Close()

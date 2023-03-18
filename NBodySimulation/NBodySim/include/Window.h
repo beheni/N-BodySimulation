@@ -12,6 +12,7 @@ public:
 
 	GLFWwindow* Get() const;
 	bool Open() const;
+	float GetAspectRation() const;
 	void SwapBuffers();
 	void Clear(float r, float g, float b);
 	void Close();

@@ -10,11 +10,11 @@ App::App()
 
     m_Window = std::make_unique<Window>(1920, 1080, "N-Body Simulation", true);
     m_RenderShader = std::make_unique<RenderShader>("./NBodySim/data/shaders/shader.vert", "./NBodySim/data/shaders/shader.frag");
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), 75.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 100.0f);
     m_Mesh = std::make_unique<Mesh>(100);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
 
-    m_Mouse->DisableCursor(m_Window->Get());
+    m_Mouse->DisableCursor(m_Window->Get());  
 }
 
 App::~App()

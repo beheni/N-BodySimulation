@@ -10,7 +10,11 @@ Mesh::Mesh(int particlesCount)
     {
     -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0,
      0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0,
-     0.0f,  0.5f, 0.0f, 0.0, 0.0, 1.0,
+     0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0,
+
+     0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0,
+    -0.5f, 0.5f, 0.0f, 0.0, 1.0, 0.0,
+     -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0
     };
 
     glGenBuffers(1, &m_VBO);
@@ -31,5 +35,5 @@ Mesh::~Mesh()
 
 void Mesh::Draw()
 {
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

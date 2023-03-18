@@ -65,8 +65,8 @@ void Camera::Move(Direction diretion, float dt)
 void Camera::Rotate(float angle, const glm::vec3& axis)
 {
     m_Rotation = glm::rotate(m_Rotation, angle, axis);
-    RecalculateViewMatrix();
     RecalculateVectors();
+    RecalculateViewMatrix();
 }
 
 void Camera::ProcessMouseInput(const glm::vec2& mouseOffset)

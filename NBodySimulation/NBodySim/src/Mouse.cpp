@@ -3,6 +3,7 @@
 Mouse::Mouse(GLFWwindow* window)
 {
 	PlaceInCenter(window);
+	m_Fixed = false;
 }
 
 void Mouse::DisableCursor(GLFWwindow* window)
@@ -33,6 +34,8 @@ glm::vec2 Mouse::GetOffset(GLFWwindow* window) const
 	{
 		m_SavedPosition.x = mouseX;
 		m_SavedPosition.y = mouseY;
+
+		return glm::vec2(0.0f, 0.0f);
 	}
 
 	return offset;

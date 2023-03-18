@@ -3,6 +3,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <string>
+
+#include "Exception.h"
 
 class VertexBufferLayout 
 {
@@ -21,7 +24,9 @@ public:
             case GL_UNSIGNED_INT: return sizeof(GLuint);
             case GL_UNSIGNED_BYTE: return sizeof(GLubyte);
             }
-            //TODO: add exception here - invalid attribute type specified
+
+            std::string msg = "Invalid vertex attribute type: " + std::to_string(type);
+            throw EXCEPTION(msg.c_str());
             return 0;
         }
 
