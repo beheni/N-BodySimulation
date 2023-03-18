@@ -1,6 +1,26 @@
 #include "ShaderBase.h"
 #include "Exception.h"
 
+void ShaderBase::SetBool(const char* name, bool value)
+{
+	glUniform1i(glGetUniformLocation(m_ShaderProgram, name), static_cast<int>(value));
+}
+
+void ShaderBase::SetInt(const char* name, int value)
+{
+	glUniform1i(glGetUniformLocation(m_ShaderProgram, name), value);
+}
+
+void ShaderBase::SetFloat(const char* name, float value)
+{
+	glUniform1f(glGetUniformLocation(m_ShaderProgram, name), value);
+}
+
+void ShaderBase::SetMat4x4(const char* name, const glm::mat4x4& value)
+{
+	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram, name), 1, GL_FALSE, &value[0][0]);
+}
+
 void ShaderBase::CheckCompilation(GLuint shaderId) const
 {
 	GLint success{};

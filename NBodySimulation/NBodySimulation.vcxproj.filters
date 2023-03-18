@@ -41,6 +41,8 @@
     </ClCompile>
     <ClCompile Include="NBodySim\src\Exception.cpp" />
     <ClCompile Include="NBodySim\src\ShaderBase.cpp" />
+    <ClCompile Include="NBodySim\src\App.cpp" />
+    <ClCompile Include="NBodySim\src\Clock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\include\glm\detail\_features.hpp">
@@ -991,6 +993,8 @@
     </ClInclude>
     <ClInclude Include="NBodySim\include\Exception.h" />
     <ClInclude Include="NBodySim\include\ShaderBase.h" />
+    <ClInclude Include="NBodySim\include\App.h" />
+    <ClInclude Include="NBodySim\include\Clock.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="external\lib\glew32.lib">
