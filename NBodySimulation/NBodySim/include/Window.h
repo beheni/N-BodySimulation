@@ -7,7 +7,7 @@
 class Window
 {
 public:
-	Window(int width, int height, const char* title);
+	Window(int width, int height, const char* title, bool fullscreen = false);
 	~Window();
 
 	GLFWwindow* Get() const;
@@ -17,6 +17,7 @@ public:
 	void Close();
 	void CaptureCursor();
 	void ReleaseCursor();
+	void SetFullScreen(bool flag);
 
 private:
 	static void FramebufferSizeCallBack(GLFWwindow* window, int width, int height);
@@ -24,6 +25,7 @@ private:
 private:
 	int m_Width;
 	int m_Height;
+	bool m_FullScreen;
 	std::string m_Title;
 	GLFWwindow* m_Window;
 };

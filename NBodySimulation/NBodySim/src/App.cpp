@@ -8,7 +8,7 @@ App::App()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    m_Window = std::make_unique<Window>(800, 600, "N-Body Simulation");
+    m_Window = std::make_unique<Window>(1920, 1080, "N-Body Simulation", true);
     m_RenderShader = std::make_unique<RenderShader>("./NBodySim/data/shaders/shader.vert", "./NBodySim/data/shaders/shader.frag");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), 75.0f, 4.0f / 3.0f, 0.1f, 100.0f);
     m_Mesh = std::make_unique<Mesh>(100);
@@ -41,7 +41,7 @@ void App::DoFrame(float dt)
 {
     m_RenderShader->Use();
 
-    m_RenderShader->SetFloat("ColorScale", 1.0f);
+    m_RenderShader->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
     m_RenderShader->SetMat4x4("Projection", m_Camera->GetProjectionMatrix());
     m_RenderShader->SetMat4x4("View", m_Camera->GetViewMatrix());
     m_RenderShader->SetMat4x4("Model", glm::identity<glm::mat4x4>());
@@ -55,6 +55,7 @@ void App::ProcessEvents(float dt)
     if (glfwGetKey(m_Window->Get(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         m_Window->Close();
 
+    // Camera movement
     using CamDir = Camera::Direction;
     if (glfwGetKey(m_Window->Get(), GLFW_KEY_A) == GLFW_PRESS)
         m_Camera->Move(CamDir::Left, dt);
@@ -68,6 +69,8 @@ void App::ProcessEvents(float dt)
         m_Camera->Move(CamDir::Up, dt);
     if (glfwGetKey(m_Window->Get(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         m_Camera->Move(CamDir::Down, dt);
+
+    // Camera rotation
 }
 
 void App::PollEvents(float dt)
