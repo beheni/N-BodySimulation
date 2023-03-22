@@ -33,9 +33,6 @@
     <ClCompile Include="NBodySim\src\Mesh.cpp">
       <Filter>source files</Filter>
     </ClCompile>
-    <ClCompile Include="NBodySim\src\Renderer.cpp">
-      <Filter>source files</Filter>
-    </ClCompile>
     <ClCompile Include="NBodySim\src\RenderProgram.cpp">
       <Filter>source files</Filter>
     </ClCompile>
@@ -975,9 +972,6 @@
       <Filter>header files</Filter>
     </ClInclude>
     <ClInclude Include="NBodySim\include\Mesh.h">
-      <Filter>header files</Filter>
-    </ClInclude>
-    <ClInclude Include="NBodySim\include\Renderer.h">
       <Filter>header files</Filter>
     </ClInclude>
     <ClInclude Include="NBodySim\include\RenderProgram.h">

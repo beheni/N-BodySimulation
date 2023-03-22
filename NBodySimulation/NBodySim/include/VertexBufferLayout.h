@@ -18,7 +18,7 @@ public:
 
         static unsigned int GetTypeSize(unsigned int type) 
         {
-            switch (type) 
+            switch (type)
             {
             case GL_FLOAT: return sizeof(GLfloat);
             case GL_UNSIGNED_INT: return sizeof(GLuint);

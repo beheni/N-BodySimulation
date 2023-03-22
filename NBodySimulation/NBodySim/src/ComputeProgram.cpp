@@ -10,20 +10,13 @@ ComputeProgram::ComputeProgram(const std::string& sourceFile)
     std::ifstream file;
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-    try
-    {
-        file.open(sourceFile);
-        std::stringstream shaderStream;
-        shaderStream << file.rdbuf();
-        file.close();
-        shaderString = shaderStream.str();
-    }
-    catch (std::ifstream::failure e)
-    {
-        throw EXCEPTION(e.what());
-    }
-    const char* cStringShader = shaderString.c_str();
+    file.open(sourceFile);
+    std::stringstream shaderStream;
+    shaderStream << file.rdbuf();
+    file.close();
+    shaderString = shaderStream.str();
 
+    const char* cStringShader = shaderString.c_str();
     GLuint shader = glCreateShader(GL_COMPUTE_SHADER);
     glShaderSource(shader, 1, &cStringShader, NULL);
     glCompileShader(shader);

@@ -182,7 +182,6 @@
     <ClCompile Include="NBodySim\src\Mesh.cpp" />
     <ClCompile Include="NBodySim\src\glad.c" />
     <ClCompile Include="NBodySim\src\WinMain.cpp" />
-    <ClCompile Include="NBodySim\src\Renderer.cpp" />
     <ClCompile Include="NBodySim\src\Texture.cpp" />
     <ClCompile Include="NBodySim\src\Window.cpp" />
     <ClCompile Include="NBodySim\src\RenderProgram.cpp" />
@@ -508,7 +507,6 @@
     <ClInclude Include="external\include\SOIL2\stb_image_write.h" />
     <ClInclude Include="external\include\SOIL2\wfETC.h" />
     <ClInclude Include="NBodySim\include\Mesh.h" />
-    <ClInclude Include="NBodySim\include\Renderer.h" />
     <ClInclude Include="NBodySim\include\SafeWindows.h" />
     <ClInclude Include="NBodySim\include\Texture.h" />
     <ClInclude Include="NBodySim\include\Window.h" />
