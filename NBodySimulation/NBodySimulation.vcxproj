@@ -172,7 +172,7 @@
     <ClCompile Include="NBodySim\src\Clock.cpp" />
     <ClCompile Include="NBodySim\src\App.cpp" />
     <ClCompile Include="NBodySim\src\Exception.cpp" />
-    <ClCompile Include="NBodySim\src\ComputeShader.cpp" />
+    <ClCompile Include="NBodySim\src\ComputeProgram.cpp" />
     <ClCompile Include="NBodySim\src\Camera.cpp" />
     <ClCompile Include="external\include\glm\detail\glm.cpp" />
     <ClCompile Include="external\include\SOIL2\image_DXT.c" />
@@ -185,7 +185,7 @@
     <ClCompile Include="NBodySim\src\Renderer.cpp" />
     <ClCompile Include="NBodySim\src\Texture.cpp" />
     <ClCompile Include="NBodySim\src\Window.cpp" />
-    <ClCompile Include="NBodySim\src\RenderShader.cpp" />
+    <ClCompile Include="NBodySim\src\RenderProgram.cpp" />
     <ClCompile Include="NBodySim\src\ShaderBase.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -198,7 +198,7 @@
     <ClInclude Include="NBodySim\include\Clock.h" />
     <ClInclude Include="NBodySim\include\App.h" />
     <ClInclude Include="NBodySim\include\Exception.h" />
-    <ClInclude Include="NBodySim\include\ComputeShader.h" />
+    <ClInclude Include="NBodySim\include\ComputeProgram.h" />
     <ClInclude Include="NBodySim\include\Camera.h" />
     <ClInclude Include="external\include\glad\glad.h" />
     <ClInclude Include="external\include\GLFW\glfw3.h" />
@@ -513,7 +513,7 @@
     <ClInclude Include="NBodySim\include\Texture.h" />
     <ClInclude Include="NBodySim\include\Window.h" />
     <ClInclude Include="NBodySim\include\VertexBufferLayout.h" />
-    <ClInclude Include="NBodySim\include\RenderShader.h" />
+    <ClInclude Include="NBodySim\include\RenderProgram.h" />
     <ClInclude Include="NBodySim\include\ShaderBase.h" />
   </ItemGroup>
   <ItemGroup>

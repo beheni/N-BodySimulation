@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 
-#include "RenderShader.h"
+#include "RenderProgram.h"
 #include "Exception.h"
 #include "Window.h"
 #include "Camera.h"
@@ -28,7 +28,7 @@ private:
 private:
 	Clock m_Clock;
 
-	std::unique_ptr<RenderShader> m_RenderShader;
+	std::unique_ptr<RenderProgram> m_RenderProgram;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;
 	std::unique_ptr<Mouse> m_Mouse;

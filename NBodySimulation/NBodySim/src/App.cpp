@@ -9,7 +9,7 @@ App::App()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     m_Window = std::make_unique<Window>(1920, 1080, "N-Body Simulation", true);
-    m_RenderShader = std::make_unique<RenderShader>("./NBodySim/data/shaders/shader.vert", "./NBodySim/data/shaders/shader.frag");
+    m_RenderProgram = std::make_unique<RenderProgram>("./NBodySim/data/shaders/shader.vert", "./NBodySim/data/shaders/shader.frag");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 100.0f);
     m_Mesh = std::make_unique<Mesh>(100);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
@@ -43,11 +43,11 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
-    m_RenderShader->Use();
+    m_RenderProgram->Use();
 
-    m_RenderShader->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
-    m_RenderShader->SetMat4x4("ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
-    m_RenderShader->SetMat4x4("Model", glm::identity<glm::mat4x4>());
+    m_RenderProgram->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
+    m_RenderProgram->SetMat4x4("ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
+    m_RenderProgram->SetMat4x4("Model", glm::identity<glm::mat4x4>());
 
     m_Window->Clear(0.7f, 0.2f, 0.4f);
     m_Mesh->Draw();

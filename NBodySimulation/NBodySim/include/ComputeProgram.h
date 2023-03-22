@@ -4,11 +4,11 @@
 #include <glad/glad.h>
 #include <string>
 
-class ComputeShader : public ShaderBase
+class ComputeProgram : public ShaderBase
 {
 public:
-	ComputeShader(const std::string& sourceFile);
-	~ComputeShader() override;
+	ComputeProgram(const std::string& sourceFile);
+	~ComputeProgram() override;
 
 	void Use() const override;
 };

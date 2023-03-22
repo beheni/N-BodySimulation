@@ -1,10 +1,10 @@
-#include "RenderShader.h"
+#include "RenderProgram.h"
 #include "Exception.h"
 
 #include <sstream>
 #include <fstream>
 
-RenderShader::RenderShader(const std::string& vertexSourcePath, const std::string& fragmentSourcePath)
+RenderProgram::RenderProgram(const std::string& vertexSourcePath, const std::string& fragmentSourcePath)
 {
     std::string vertexShaderString;
     std::string fragmentShaderString;
@@ -52,12 +52,12 @@ RenderShader::RenderShader(const std::string& vertexSourcePath, const std::strin
     glDeleteShader(fragmentShader);
 }
 
-RenderShader::~RenderShader()
+RenderProgram::~RenderProgram()
 {
     glDeleteProgram(m_ShaderProgram);
 }
 
-void RenderShader::Use() const
+void RenderProgram::Use() const
 {
     glUseProgram(m_ShaderProgram);
 }

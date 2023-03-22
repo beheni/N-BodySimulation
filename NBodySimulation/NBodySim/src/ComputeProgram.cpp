@@ -1,10 +1,10 @@
-#include "ComputeShader.h"
+#include "ComputeProgram.h"
 #include "Exception.h"
 
 #include <sstream>
 #include <fstream>
 
-ComputeShader::ComputeShader(const std::string& sourceFile)
+ComputeProgram::ComputeProgram(const std::string& sourceFile)
 {
     std::string shaderString;
     std::ifstream file;
@@ -37,12 +37,12 @@ ComputeShader::ComputeShader(const std::string& sourceFile)
     glDeleteShader(shader);
 }
 
-ComputeShader::~ComputeShader()
+ComputeProgram::~ComputeProgram()
 {
     glDeleteProgram(m_ShaderProgram);
 }
 
-void ComputeShader::Use() const
+void ComputeProgram::Use() const
 {
     glUseProgram(m_ShaderProgram);
 }
