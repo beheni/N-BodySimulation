@@ -23,14 +23,15 @@ public:
     const glm::vec3& GetPosition() const;
 
     void SetPosition(const glm::vec3& position);
-    void SetSpeed(float speed);
-    void Move(Direction diretion, float dt);
-    void Rotate(float angle, const glm::vec3& axis);
-    void ProcessMouseInput(const glm::vec2& mouseOffset);
-    void SetFOV(float fov);
     void SetAspectRatio(float aspectRatio);
+    void SetSpeed(float speed);
     void SetNear(float near);
     void SetFar(float far);
+    void SetFOV(float fov);
+
+    void ProcessMouseInput(const glm::vec2& mouseOffset);
+    void Rotate(float angle, const glm::vec3& axis);
+    void Move(Direction direction, float dt);
 
 private:
     void RecalculateViewMatrix();
@@ -52,6 +53,9 @@ private:
     float m_AspectRatio;
     float m_Near;
     float m_Far;
+    float m_Yaw;
+    float m_Pitch;
+    float m_Roll;
 
     const glm::vec3 DEFAULT_FRONT = glm::vec3(0.0f, 0.0f, -1.0f);
     const glm::vec3 DEFAULT_RIGHT = glm::vec3(1.0f, 0.0f, 0.0f);

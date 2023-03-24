@@ -47,7 +47,7 @@ void App::DoFrame(float dt)
 
     m_RenderProgram->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
     m_RenderProgram->SetMat4x4("ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
-    m_RenderProgram->SetMat4x4("Model", glm::identity<glm::mat4x4>());
+    m_RenderProgram->SetMat4x4("Model", glm::rotate(glm::identity<glm::mat4x4>(), 0.8f, glm::vec3(0, 1, 0)));
 
     m_Window->Clear(0.7f, 0.2f, 0.4f);
     m_Mesh->Draw();
@@ -58,7 +58,7 @@ void App::ProcessEvents(float dt)
     if (glfwGetKey(m_Window->Get(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         m_Window->Close();
 
-    // Camera movement
+    // Camera movement                                        
     using CamDir = Camera::Direction;
     if (glfwGetKey(m_Window->Get(), GLFW_KEY_A) == GLFW_PRESS)
         m_Camera->Move(CamDir::Left, dt);
@@ -76,8 +76,8 @@ void App::ProcessEvents(float dt)
     // Camera rotation
     glm::vec2 mouseOffset = m_Mouse->GetOffset(m_Window->Get());
     const float sensitivity = 0.03f;
-    m_Camera->Rotate(- dt * mouseOffset.y * sensitivity, glm::vec3(1.0f, 0.0f, 0.0f));
-    m_Camera->Rotate(- dt * mouseOffset.x * sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
+    mouseOffset *= sensitivity;
+    m_Camera->ProcessMouseInput(mouseOffset);
 }
 
 void App::PollEvents(float dt)

@@ -2,7 +2,7 @@
 
 Camera::Camera(const glm::vec3& position, float fov, float aspectRatio, float near, float far) 
     :
-    m_Position(position), m_Fov(fov), m_AspectRatio(aspectRatio), m_Near(near), m_Far(far)
+    m_Position(position), m_Fov(fov), m_AspectRatio(aspectRatio), m_Near(near), m_Far(far), m_Yaw(0), m_Pitch(0)
 {
     RecalculateVectors();
     RecalculateViewMatrix();
@@ -35,9 +35,9 @@ void Camera::SetSpeed(float speed)
     m_Speed = speed;
 }
 
-void Camera::Move(Direction diretion, float dt)
+void Camera::Move(Direction direction, float dt)
 {
-    switch (diretion)
+    switch (direction)
     {
     case Camera::Direction::Up:
         m_Position += m_Speed * dt * DEFAULT_UP;
@@ -71,6 +71,17 @@ void Camera::Rotate(float angle, const glm::vec3& axis)
 
 void Camera::ProcessMouseInput(const glm::vec2& mouseOffset)
 {
+    m_Yaw -= mouseOffset.x;
+    m_Pitch -= mouseOffset.y;
+
+    if (m_Pitch > 89.0f) m_Pitch = 89.0f;
+    else if (m_Pitch < -89.0f) m_Pitch = -89.0f;
+
+    m_Rotation = glm::rotate(glm::identity<glm::mat4>(), glm::radians(m_Yaw), glm::vec3(0, 1, 0));
+    m_Rotation = glm::rotate(m_Rotation, glm::radians(m_Pitch), glm::vec3(1, 0, 0));
+
+    RecalculateVectors();
+    RecalculateViewMatrix();
 }
 
 void Camera::SetFOV(float fov)
