@@ -48,7 +48,7 @@ void App::DoFrame(float dt)
     m_RenderProgram->Use();
   
 
-//    m_RenderProgram->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
+    m_RenderProgram->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
     m_RenderProgram->SetMat4x4("ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     m_RenderProgram->SetMat4x4("Model", glm::rotate(glm::identity<glm::mat4x4>(), 0.8f, glm::vec3(0, 1, 0)));
     
