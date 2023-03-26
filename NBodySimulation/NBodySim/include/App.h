@@ -11,6 +11,7 @@
 #include "Mouse.h""
 #include "Clock.h"
 #include "Mesh.h"
+#include "Texture.h"
 
 class App
 {
@@ -33,4 +34,5 @@ private:
 	std::unique_ptr<Camera> m_Camera;
 	std::unique_ptr<Mouse> m_Mouse;
 	std::unique_ptr<Mesh> m_Mesh;
+	std::unique_ptr<Texture> m_Texture;
 };

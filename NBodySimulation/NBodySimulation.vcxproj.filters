@@ -991,6 +991,7 @@
     <ClInclude Include="NBodySim\include\App.h" />
     <ClInclude Include="NBodySim\include\Clock.h" />
     <ClInclude Include="NBodySim\include\Mouse.h" />
+    <ClInclude Include="external\include\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="external\lib\glew32.lib">

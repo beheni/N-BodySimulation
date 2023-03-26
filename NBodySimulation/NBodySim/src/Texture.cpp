@@ -10,7 +10,7 @@ Texture::Texture(int w, int h) : width(w), height(h) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glGenerateMipmap(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    unbind();
 }
 
 Texture::Texture(const char* filepath) {
@@ -33,7 +33,7 @@ Texture::Texture(const char* filepath) {
         return;
     }        
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    unbind();
     stbi_image_free(data);
 }
 

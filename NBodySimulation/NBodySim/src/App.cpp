@@ -13,7 +13,7 @@ App::App()
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 100.0f);
     m_Mesh = std::make_unique<Mesh>(100);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
-
+    m_Texture = std::make_unique<Texture>("./NBodySim/media/grass.jpg");
     m_Mouse->DisableCursor(m_Window->Get());  
 }
 
@@ -25,7 +25,7 @@ App::~App()
 void App::Run()
 {
     m_Clock.Restart();
-
+    m_RenderProgram->SetInt("ourTexture", 0);
     while (m_Window->Open())
     {
         float deltaTime = m_Clock.Stamp();
@@ -43,11 +43,14 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
+
     m_RenderProgram->Use();
+
 
     m_RenderProgram->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
     m_RenderProgram->SetMat4x4("ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     m_RenderProgram->SetMat4x4("Model", glm::rotate(glm::identity<glm::mat4x4>(), 0.8f, glm::vec3(0, 1, 0)));
+    m_Texture->bind();
 
     m_Window->Clear(0.7f, 0.2f, 0.4f);
     m_Mesh->Draw();

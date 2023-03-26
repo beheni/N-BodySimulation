@@ -8,13 +8,14 @@ Mesh::Mesh(int particlesCount)
 
     float vertices[] = 
     {
-    -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0,
-     0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0,
-     0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0,
+    //coords            colors       texture
+    -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f, 
+     0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f,
+     0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f,
 
-     0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0,
-    -0.5f, 0.5f, 0.0f, 0.0, 1.0, 0.0,
-     -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0
+     0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f, 
+     -0.5f, 0.5f, 0.0f, 0.0, 1.0, 0.0, 0.0f, 1.0f,
+     -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f
     };
 
     glGenBuffers(1, &m_VBO);
@@ -24,6 +25,7 @@ Mesh::Mesh(int particlesCount)
     VertexBufferLayout{}
         .Push(3, GL_FLOAT, false) // pos
         .Push(3, GL_FLOAT, false) // col
+        .Push(2, GL_FLOAT, false) //texture
         .Bind();
 }
 
