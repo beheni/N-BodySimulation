@@ -1,8 +1,9 @@
 #include "Camera.h"
 
-Camera::Camera(const glm::vec3& position, float fov, float aspectRatio, float near, float far) 
+Camera::Camera(const glm::vec3& position, float fov, float aspectRatio, float near, float far)
     :
-    m_Position(position), m_Fov(fov), m_AspectRatio(aspectRatio), m_Near(near), m_Far(far), m_Yaw(0), m_Pitch(0)
+    m_Fov(fov), m_AspectRatio(aspectRatio), m_Near(near), m_Far(far),
+    m_Position(position), m_Yaw(0.0f), m_Pitch(0.0f), m_Roll(0.0f), m_Rotation(glm::identity<glm::mat4>())
 {
     RecalculateVectors();
     RecalculateViewMatrix();

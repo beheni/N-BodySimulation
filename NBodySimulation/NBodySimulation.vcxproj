@@ -180,7 +180,7 @@
     <ClCompile Include="external\include\SOIL2\SOIL2.c" />
     <ClCompile Include="external\include\SOIL2\wfETC.c" />
     <ClCompile Include="NBodySim\src\Mesh.cpp" />
-    <ClCompile Include="NBodySim\src\glad.c" />
+    <ClCompile Include="external\include\glad\glad.c" />
     <ClCompile Include="NBodySim\src\WinMain.cpp" />
     <ClCompile Include="NBodySim\src\Texture.cpp" />
     <ClCompile Include="NBodySim\src\Window.cpp" />
