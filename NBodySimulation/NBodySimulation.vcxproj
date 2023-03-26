@@ -193,6 +193,7 @@
     <Library Include="external\lib\soil2-debug.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\include\stb_image\stb_image.h" />
     <ClInclude Include="NBodySim\include\Mouse.h" />
     <ClInclude Include="NBodySim\include\Clock.h" />
     <ClInclude Include="NBodySim\include\App.h" />
