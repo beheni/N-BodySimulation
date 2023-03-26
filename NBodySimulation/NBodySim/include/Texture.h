@@ -8,6 +8,7 @@ public:
     unsigned int id;
     int width;
     int height;
+    int nrChannels;
 
     Texture(int w, int h);
 

@@ -25,6 +25,7 @@ App::~App()
 void App::Run()
 {
     m_Clock.Restart();
+    m_RenderProgram->Use();
     m_RenderProgram->SetInt("ourTexture", 0);
     while (m_Window->Open())
     {
@@ -43,14 +44,14 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
-
+    m_Texture->bind();
     m_RenderProgram->Use();
+  
 
-
-    m_RenderProgram->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
+//    m_RenderProgram->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);
     m_RenderProgram->SetMat4x4("ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     m_RenderProgram->SetMat4x4("Model", glm::rotate(glm::identity<glm::mat4x4>(), 0.8f, glm::vec3(0, 1, 0)));
-    m_Texture->bind();
+    
 
     m_Window->Clear(0.7f, 0.2f, 0.4f);
     m_Mesh->Draw();
