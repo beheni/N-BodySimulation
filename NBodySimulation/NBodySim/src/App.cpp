@@ -13,7 +13,7 @@ App::App()
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 100.0f);
     m_Mesh = std::make_unique<Mesh>(100);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
-    m_Texture = std::make_unique<Texture>("./NBodySim/media/grass.jpg");
+    m_Texture = std::make_unique<Texture>("./NBodySim/data/textures/grass.jpg");
     m_Mouse->DisableCursor(m_Window->Get());  
 }
 
@@ -44,8 +44,8 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
-    m_Texture->bind();
-    m_RenderProgram->Use();
+    //m_Texture->bind();
+    //m_RenderProgram->Use();
   
 
     m_RenderProgram->SetFloat("ColorScale", sin(glfwGetTime()) / 2.0f + 0.5f);

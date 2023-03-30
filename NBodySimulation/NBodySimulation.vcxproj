@@ -655,6 +655,9 @@
     <None Include="NBodySim\data\shaders\shader.frag" />
     <None Include="NBodySim\data\shaders\shader.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="NBodySim\data\textures\grass.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
