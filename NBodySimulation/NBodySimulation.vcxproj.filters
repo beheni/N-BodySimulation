@@ -1427,4 +1427,8 @@
       <UniqueIdentifier>{f2eab05a-080d-48fb-ba69-2e57802a6c8a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="NBodySim\data\textures\grass.jpg" />
+    <Image Include="NBodySim\data\textures\star.png" />
+  </ItemGroup>
 </Project>

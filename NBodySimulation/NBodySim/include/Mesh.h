@@ -5,7 +5,7 @@
 class Mesh
 {
 public:
-	Mesh(int particlesCount);
+	Mesh(size_t quadsNumber, float min, float max);
 	~Mesh();
 
 	void Draw();
@@ -13,5 +13,7 @@ public:
 private:
 	GLuint m_VAO;
 	GLuint m_VBO;
+
+	size_t m_QuadsNumber;
 };
 

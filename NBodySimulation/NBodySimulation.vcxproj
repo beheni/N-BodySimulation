@@ -657,6 +657,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="NBodySim\data\textures\grass.jpg" />
+    <Image Include="NBodySim\data\textures\star.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -15,6 +15,11 @@ const glm::mat4& Camera::GetViewMatrix() const
     return m_ViewMatrix; 
 }
 
+const glm::mat4& Camera::GetRotationMatrix() const
+{
+    return m_Rotation;
+}
+
 const glm::mat4& Camera::GetProjectionMatrix() const 
 {
     return m_ProjectionMatrix; 

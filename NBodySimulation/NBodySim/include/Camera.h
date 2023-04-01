@@ -19,6 +19,7 @@ public:
     Camera(const glm::vec3& position, float fov, float aspectRatio, float near, float far);
 
     const glm::mat4& GetViewMatrix() const;
+    const glm::mat4& GetRotationMatrix() const;
     const glm::mat4& GetProjectionMatrix() const;
     const glm::vec3& GetPosition() const;
 
@@ -48,7 +49,7 @@ private:
     glm::vec3 m_Right = DEFAULT_RIGHT;
     glm::vec3 m_Up = DEFAULT_UP;
 
-    float m_Speed = 2.5f;
+    float m_Speed = 5.0f;
     float m_Fov;
     float m_AspectRatio;
     float m_Near;
