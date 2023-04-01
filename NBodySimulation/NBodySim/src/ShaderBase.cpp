@@ -16,6 +16,11 @@ void ShaderBase::SetFloat(const char* name, float value)
 	glUniform1f(glGetUniformLocation(m_ShaderProgram, name), value);
 }
 
+void ShaderBase::SetIntArray(const char* name, size_t count, const GLint* values)
+{
+	glUniform1iv(glGetUniformLocation(m_ShaderProgram, name), count, values);
+}
+
 void ShaderBase::SetMat4x4(const char* name, const glm::mat4x4& value)
 {
 	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram, name), 1, GL_FALSE, &value[0][0]);

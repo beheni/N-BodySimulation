@@ -13,6 +13,7 @@ public:
 	void SetBool(const char* name, bool value);
 	void SetInt(const char* name, int value);
 	void SetFloat(const char* name, float value);
+	void SetIntArray(const char* name, size_t count, const GLint* values);
 	void SetMat4x4(const char* name, const glm::mat4x4& value);
 
 protected:

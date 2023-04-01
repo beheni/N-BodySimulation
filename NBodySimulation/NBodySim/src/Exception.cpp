@@ -1,7 +1,6 @@
 #include "Exception.h"
 #include <sstream>
 
-
 Exception::Exception(int line, const char* file, const char* msg)
     :
     m_Line(line), m_File(file), m_Msg(msg)

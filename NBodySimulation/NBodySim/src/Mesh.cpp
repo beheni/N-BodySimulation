@@ -47,14 +47,16 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         } texCoord;
     };
 
-    std::normal_distribution<float> dist(0, 50);
+    std::normal_distribution<float> distX(0, 20);
+    std::normal_distribution<float> distY(0, 3);
+    std::normal_distribution<float> distZ(0, 20);
     std::default_random_engine eng;
 
     std::vector<Vertex> vertices;
 
     for (size_t i = 0; i < quadsNumber; i++)
     {
-        glm::vec3 pos = { dist(eng), dist(eng), dist(eng) };
+        glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
         vertices.emplace_back(pos.x, pos.y, pos.z, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
         vertices.emplace_back(pos.x, pos.y, pos.z,  0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f);
         vertices.emplace_back(pos.x, pos.y, pos.z,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
