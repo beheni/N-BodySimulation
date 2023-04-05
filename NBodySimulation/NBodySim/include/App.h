@@ -38,4 +38,5 @@ private:
 	std::unique_ptr<Mouse> m_Mouse;
 	std::unique_ptr<Mesh> m_Mesh;
 	std::unique_ptr<Texture> m_Texture;
+	std::unique_ptr<Texture> m_TexturePos;
 };

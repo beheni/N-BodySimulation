@@ -5,7 +5,7 @@ layout(rgba32f, binding = 0) uniform image2D imgOutput;
 layout (location = 0) uniform float t;                 /** Time */
 
 void main() {
-    vec4 value = vec4(1.0, 0.0, 0.0, 1.0);
+    vec4 value = vec4(1.0, 1.0, 1.0, 1.0);
     ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
   
     //value.x = float(texelCoord.x)/(gl_NumWorkGroups.x);
