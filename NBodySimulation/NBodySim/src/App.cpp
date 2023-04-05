@@ -14,22 +14,27 @@ App::App()
     m_ComputeProgram = std::make_unique<ComputeProgram>("./NBodySim/data/shaders/shader.comp");
     m_Texture = std::make_unique<Texture>("./NBodySim/data/textures/star.png");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 40.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 250.0f);
-    m_Mesh = std::make_unique<Mesh>(1024 * 1024, -80, 80);
+    m_Mesh = std::make_unique<Mesh>(c_TextureSize * c_TextureSize, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
 
+    //m_VelocityTextures.push_back(Texture(c_TextureSize, c_TextureSize, data.data()));
+    //m_VelocityTextures.push_back(Texture(c_TextureSize, c_TextureSize, data.data()));
+    //data.clear();
 
     std::normal_distribution<float> distX(0, 30);
     std::normal_distribution<float> distY(0, 2);
     std::normal_distribution<float> distZ(0, 30);
     std::default_random_engine eng;
     std::vector<glm::vec4> data;
-    data.reserve(1024 * 1024);
-    for (size_t i = 0; i < 1024 * 1024; i++)
+    data.reserve(c_TextureSize * c_TextureSize);
+    for (size_t i = 0; i < c_TextureSize * c_TextureSize; i++)
     {
         data.emplace_back(distX(eng), distY(eng), distZ(eng), 0.0f);
     }
-    m_TexturePos = std::make_unique<Texture>(1024, 1024, data.data());
+    //m_TexturePos = std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data());
 
+    m_PositionTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
+    m_PositionTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
     m_Mouse->DisableCursor(m_Window->Get());
 }
 
@@ -62,19 +67,27 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
-
+    
     // compute shit
     m_ComputeProgram->Use();
-    glDispatchCompute(1024 / 8, 1024 / 4, 1);
+    glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
     // render shit
     m_RenderProgram->Use();
     m_Texture->Bind(0);
-    m_TexturePos->Bind(1);
-    //m_TexturePos->BidCompute(0);
+    m_PositionTextures[m_FrameCounter % 2]->Bind(1);
     m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetInt("u_TexturePos", 1);
+
+
+    //m_PositionTextures[1].Bind(1);
+
+    m_PositionTextures[(m_FrameCounter + 1) % 2]->Bind(2);
+    /*m_VelocityTextures[m_FrameCounter % 2].Bind(3);
+    m_VelocityTextures[(m_FrameCounter + 1) % 2].Bind(4);*/
+
+    //m_TexturePos->Bind(1);
 
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     //m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));

@@ -10,7 +10,7 @@
 #include "Exception.h"
 #include "Window.h"
 #include "Camera.h"
-#include "Mouse.h""
+#include "Mouse.h"
 #include "Clock.h"
 #include "Mesh.h"
 #include "Texture.h"
@@ -38,6 +38,10 @@ private:
 	std::unique_ptr<Mouse> m_Mouse;
 	std::unique_ptr<Mesh> m_Mesh;
 	std::unique_ptr<Texture> m_Texture;
-	std::unique_ptr<Texture> m_TexturePos;
+	//std::unique_ptr<Texture> m_TexturePos;
 	size_t m_FrameCounter;
+	std::vector<std::unique_ptr<Texture>> m_PositionTextures;
+	std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
+	const size_t c_TextureSize = 1024;
+
 };
