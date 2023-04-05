@@ -42,6 +42,6 @@ private:
 	size_t m_FrameCounter;
 	std::vector<std::unique_ptr<Texture>> m_PositionTextures;
 	std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
-	const size_t c_TextureSize = 512;
+	const size_t c_TextureSize = 128;
 
 };

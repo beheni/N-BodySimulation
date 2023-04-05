@@ -19,17 +19,16 @@ void main()
     // change velocity
     vec4 f = vec4(0, 0, 0, 0);
 
-    for(uint i = 0; i < imgSize.x; ++i)
+    for(uint i = 0; i < 128; ++i)
     {
-        for(uint j = 0; j < imgSize.y; ++j)
+        for(uint j = 0; j < 128; ++j)
         {
             ivec2 curTexel = ivec2(i, j);
-            vec4 curVel = imageLoad(velImgInput, curTexel);
             vec4 curPos = imageLoad(posImgInput, curTexel);
 
             vec4 pathVec = curPos - position;
-            float dist = length(pathVec);
-            float invDistCub = 1 / (dist * dist * dist);
+            float dist = length(pathVec) + 0.1;
+            float invDistCub = 1.0 / (dist * dist * dist);
 
             pathVec = pathVec * invDistCub;
 
@@ -37,10 +36,11 @@ void main()
         }
     }
 
-    float G = 0.000001;
+    float G = 0.01;
 
-    //f = f * G;
-    velocity = velocity;// + f;
+    f = f * G;
+    f = min(f, vec4(10));
+    velocity = velocity + f;
 
     imageStore(velImgOutput, texelCoord, velocity);
 

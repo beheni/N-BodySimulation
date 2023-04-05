@@ -22,9 +22,9 @@ App::App()
     m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
     data.clear();
 
-    std::normal_distribution<float> distX(0, 30);
-    std::normal_distribution<float> distY(0, 2);
-    std::normal_distribution<float> distZ(0, 30);
+    std::uniform_real_distribution<float> distX(-50, 50);
+    std::uniform_real_distribution<float> distY(-50, 50);
+    std::uniform_real_distribution<float> distZ(-50, 50);
     std::default_random_engine eng;
     data.reserve(c_TextureSize * c_TextureSize);
     for (size_t i = 0; i < c_TextureSize * c_TextureSize; i++)
