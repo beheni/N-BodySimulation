@@ -29,6 +29,8 @@ void App::Run()
 {
     m_Clock.Restart();
     m_RenderProgram->Use();
+    m_RenderProgram->SetInt("u_Texture", 0);
+
     //m_Texture->Bind();
 
     while (m_Window->Open())
@@ -56,7 +58,6 @@ void App::DoFrame(float dt)
 
     // render shit
     m_RenderProgram->Use();
-    m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     //m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
     m_RenderProgram->SetMat4x4("u_Model", glm::identity<glm::mat4x4>());
