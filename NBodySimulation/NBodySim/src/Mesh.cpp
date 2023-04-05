@@ -30,7 +30,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
 
     for (int i = 0; i < quadsNumber; i++)
     {
-        glm::vec2 id = {float(i % 1024) / 1024.0f, float(i / 1024) / 1024.0f};
+        glm::vec2 id = {float(i % 512) / 512.0f, float(i / 512) / 512.0f};
         vertices.emplace_back(id.x, id.y, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
         vertices.emplace_back(id.x, id.y,  0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f);
         vertices.emplace_back(id.x, id.y,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);

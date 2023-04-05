@@ -70,6 +70,15 @@ void App::DoFrame(float dt)
     
     // compute part
     m_ComputeProgram->Use();
+    m_PositionTextures[m_FrameCounter % 2]->Bind(1);
+    m_PositionTextures[(m_FrameCounter + 1) % 2]->Bind(2);
+    m_VelocityTextures[m_FrameCounter % 2]->Bind(3);
+    m_VelocityTextures[(m_FrameCounter + 1) % 2]->Bind(4);
+    m_ComputeProgram->SetFloat("deltaTime", dt);
+    m_ComputeProgram->SetInt("posImgInput", 1);
+    m_ComputeProgram->SetInt("posImgOutput", 2);
+    m_ComputeProgram->SetInt("velImgInput", 3);
+    m_ComputeProgram->SetInt("velImgOutput", 4);
     glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
