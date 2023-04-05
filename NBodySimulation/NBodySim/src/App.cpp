@@ -47,9 +47,6 @@ void App::Run()
 {
     m_Clock.Restart();
     m_RenderProgram->Use();
-
-    //m_Texture->Bind();
-
     while (m_Window->Open())
     {
         float deltaTime = m_Clock.Stamp();
@@ -70,11 +67,15 @@ void App::DoFrame(float dt)
     
     // compute part
     m_ComputeProgram->Use();
+    m_ComputeProgram->SetFloat("deltaTime", dt);
+    m_ComputeProgram->SetFloat("particleMass", c_particleMass);
+    m_ComputeProgram->SetFloat("G", c_G);
     glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
     // render part
     m_RenderProgram->Use();
+
     m_Texture->Bind(0);
     m_PositionTextures[m_FrameCounter % 2]->Bind(1);
     m_PositionTextures[(m_FrameCounter + 1) % 2]->Bind(2);

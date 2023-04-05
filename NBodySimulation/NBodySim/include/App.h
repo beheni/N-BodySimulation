@@ -43,5 +43,6 @@ private:
 	std::vector<std::unique_ptr<Texture>> m_PositionTextures;
 	std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
 	const size_t c_TextureSize = 1024;
-
+	const float c_particleMass = 30e6;
+	const float c_G = 6.67384e-11;
 };
