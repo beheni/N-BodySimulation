@@ -37,12 +37,6 @@ private:
 	std::unique_ptr<Camera> m_Camera;
 	std::unique_ptr<Mouse> m_Mouse;
 	std::unique_ptr<Mesh> m_Mesh;
-
 	std::unique_ptr<Texture> m_Texture;
-
-	std::vector<Texture> m_PositionTextures;
-	std::vector<Texture> m_VelocityTextures;
-
-	const int c_TextureSize = 32;
-	size_t m_FrameIndex = 0;
+	std::unique_ptr<Texture> m_TexturePos;
 };
