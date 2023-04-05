@@ -39,4 +39,5 @@ private:
 	std::unique_ptr<Mesh> m_Mesh;
 	std::unique_ptr<Texture> m_Texture;
 	std::unique_ptr<Texture> m_TexturePos;
+	size_t m_FrameCounter;
 };

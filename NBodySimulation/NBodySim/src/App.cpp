@@ -70,11 +70,12 @@ void App::DoFrame(float dt)
 
     // render shit
     m_RenderProgram->Use();
-    m_Texture->Bind(1);
-    m_TexturePos->Bind(0);
-    //m_TexturePos->BindCompute(0);
-    m_RenderProgram->SetInt("u_Texture", 1);
-    m_RenderProgram->SetInt("u_TexturePos", 0);
+    m_Texture->Bind(0);
+    m_TexturePos->Bind(1);
+    //m_TexturePos->BidCompute(0);
+    m_RenderProgram->SetInt("u_Texture", 0);
+    m_RenderProgram->SetInt("u_TexturePos", 1);
+
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     //m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
     m_RenderProgram->SetMat4x4("u_Model", glm::identity<glm::mat4x4>());
@@ -82,6 +83,7 @@ void App::DoFrame(float dt)
 
     m_Window->Clear(0.05f, 0.05f, 0.1f);
     m_Mesh->Draw();
+    m_FrameCounter++;
 }
 
 void App::ProcessEvents(float dt)
