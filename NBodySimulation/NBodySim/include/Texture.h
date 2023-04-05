@@ -1,12 +1,13 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <stb_image/stb_image.h>
+#include <glm/glm.hpp>
 
 
 class Texture {
 public:
     Texture(int w, int h);
-    Texture(int w, int h, const void* data);
+    Texture(int w, int h, glm::vec4* data);
     Texture(const char* filepath);
     ~Texture();
 

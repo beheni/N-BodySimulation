@@ -17,7 +17,7 @@ Texture::Texture(int w, int h)
     Unbind();
 }
 
-Texture::Texture(int w, int h, const void* data)
+Texture::Texture(int w, int h, glm::vec4* data)
     :
     m_Width(w), m_Height(h)
 {
@@ -27,7 +27,7 @@ Texture::Texture(int w, int h, const void* data)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, w, h, 0, GL_RGB32F, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, w, h, 0, GL_RGBA, GL_FLOAT, data);
     glBindImageTexture(0, m_TextureID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
     Unbind();
