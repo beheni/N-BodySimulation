@@ -47,9 +47,6 @@ void App::Run()
 {
     m_Clock.Restart();
     m_RenderProgram->Use();
-
-    //m_Texture->Bind();
-
     while (m_Window->Open())
     {
         float deltaTime = m_Clock.Stamp();
@@ -84,6 +81,7 @@ void App::DoFrame(float dt)
 
     // render part
     m_RenderProgram->Use();
+
     m_Texture->Bind(0);
     m_PositionTextures[m_FrameCounter % 2]->Bind(1);
     m_PositionTextures[(m_FrameCounter + 1) % 2]->Bind(2);
