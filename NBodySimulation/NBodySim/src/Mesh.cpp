@@ -14,29 +14,30 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
     struct Vertex
     {
         Vertex() = default;
-        Vertex(int ID, float x, float y, float z, float r, float g, float b, float u, float v)
+        Vertex(float idx, float idy, float x, float y, float z, float r, float g, float b, float u, float v)
             :
-            ID(ID), position({x, y, z}), color({r, g, b}), texCoord({u, v})
+            id({idx, idy}), position({ x, y, z }), color({ r, g, b }), texCoord({ u, v })
         {}
         
-        int ID;
         glm::vec3 position;
         glm::vec3 color;
         glm::vec2 texCoord;
+        glm::vec2 id;
     };
 
     std::vector<Vertex> vertices;
     vertices.reserve(quadsNumber);
 
-    for (size_t i = 0; i < quadsNumber; i++)
+    for (int i = 0; i < quadsNumber; i++)
     {
-        vertices.emplace_back(i, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
-        vertices.emplace_back(i,  0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f);
-        vertices.emplace_back(i,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
+        glm::vec2 id = {float(i % 1024) / 1024.0f, float(i / 1024) / 1024.0f};
+        vertices.emplace_back(id.x, id.y, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
+        vertices.emplace_back(id.x, id.y,  0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f);
+        vertices.emplace_back(id.x, id.y,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
                              
-        vertices.emplace_back(i,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
-        vertices.emplace_back(i, -0.5f,  0.5f, 0.0f, 0.0, 1.0, 0.0, 0.0f, 1.0f);
-        vertices.emplace_back(i, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
+        vertices.emplace_back(id.x, id.y,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
+        vertices.emplace_back(id.x, id.y, -0.5f,  0.5f, 0.0f, 0.0, 1.0, 0.0, 0.0f, 1.0f);
+        vertices.emplace_back(id.x, id.y, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
     }
 
     glGenBuffers(1, &m_VBO);
@@ -44,10 +45,10 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), vertices.data(), GL_STATIC_DRAW);
 
     VertexBufferLayout{}
-        .Push(1, GL_INT,   false) // ID
         .Push(3, GL_FLOAT, false) // local position
         .Push(3, GL_FLOAT, false) // color
         .Push(2, GL_FLOAT, false) // texCoords
+        .Push(2, GL_FLOAT, false) // id
         .Bind();
 }
 

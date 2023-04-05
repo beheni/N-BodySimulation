@@ -14,7 +14,7 @@ App::App()
     m_ComputeProgram = std::make_unique<ComputeProgram>("./NBodySim/data/shaders/shader.comp");
     m_Texture = std::make_unique<Texture>("./NBodySim/data/textures/star.png");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 40.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 250.0f);
-    m_Mesh = std::make_unique<Mesh>(78, -80, 80);
+    m_Mesh = std::make_unique<Mesh>(1024 * 1024, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
 
 
@@ -23,12 +23,12 @@ App::App()
     std::normal_distribution<float> distZ(0, 30);
     std::default_random_engine eng;
     std::vector<glm::vec4> data;
-    data.reserve(512 * 512);
-    for (size_t i = 0; i < 512 * 512; i++)
+    data.reserve(1024 * 1024);
+    for (size_t i = 0; i < 1024 * 1024; i++)
     {
         data.emplace_back(distX(eng), distY(eng), distZ(eng), 0.0f);
     }
-    m_TexturePos = std::make_unique<Texture>(512, 512, data.data());
+    m_TexturePos = std::make_unique<Texture>(1024, 1024, data.data());
 
     m_Mouse->DisableCursor(m_Window->Get());
 }

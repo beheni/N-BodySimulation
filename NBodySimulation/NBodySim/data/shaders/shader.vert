@@ -1,9 +1,9 @@
 #version 430 core
 
-layout (location = 0) in int  a_ID;
-layout (location = 1) in vec3 a_Pos;
-layout (location = 2) in vec3 a_Color; 
-layout (location = 3) in vec2 a_TexCoord;
+layout (location = 0) in vec3 a_Pos;
+layout (location = 1) in vec3 a_Color; 
+layout (location = 2) in vec2 a_TexCoord;
+layout (location = 3) in vec2 a_ID;
 
 uniform mat4x4 u_ProjView;
 uniform mat4x4 u_Model;
@@ -15,9 +15,9 @@ out vec2 v_TexCoord;
 
 void main()
 {
-	vec4 translation = texture(u_TexturePos, vec2( float(a_ID - (512 * floor(a_ID/512))) / 512.0, float(floor(a_ID / 512)) / 512.0 ));
+	vec4 translation = texture(u_TexturePos, a_ID);
 	vec4 position = u_CameraRotation * vec4(a_Pos, 1.0) + translation;
 	gl_Position = u_ProjView * position;
-	v_Color	= vec3(1.0);
+	v_Color	= vec3(1 - length(translation) / 20, 1, length(translation) / 20);
 	v_TexCoord = a_TexCoord;
 }
