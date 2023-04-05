@@ -72,6 +72,8 @@ void App::DoFrame(float dt)
     // compute shit
     m_ComputeProgram->Use();
     m_ComputeProgram->SetFloat("deltaTime", dt);
+    m_ComputeProgram->SetFloat("particleMass", c_particleMass);
+    m_ComputeProgram->SetFloat("G", c_G);
     m_PositionTextures[m_FrameIndex % 2].Bind(1);
     m_PositionTextures[(m_FrameIndex+1) % 2].Bind(2);
     m_VelocityTextures[m_FrameIndex % 2].Bind(3);

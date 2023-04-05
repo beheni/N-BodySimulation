@@ -45,4 +45,7 @@ private:
 
 	const int c_TextureSize = 32;
 	size_t m_FrameIndex = 0;
+
+	const float c_particleMass = 30e6;
+	const float c_G = 6.67384e-11;
 };
