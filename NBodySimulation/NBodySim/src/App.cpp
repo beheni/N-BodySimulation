@@ -17,15 +17,15 @@ App::App()
     m_Mesh = std::make_unique<Mesh>(c_TextureSize * c_TextureSize, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
 
-    //m_VelocityTextures.push_back(Texture(c_TextureSize, c_TextureSize, data.data()));
-    //m_VelocityTextures.push_back(Texture(c_TextureSize, c_TextureSize, data.data()));
-    //data.clear();
+    std::vector<glm::vec4> data(c_TextureSize*c_TextureSize);
+    m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
+    m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
+    data.clear();
 
     std::normal_distribution<float> distX(0, 30);
     std::normal_distribution<float> distY(0, 2);
     std::normal_distribution<float> distZ(0, 30);
     std::default_random_engine eng;
-    std::vector<glm::vec4> data;
     data.reserve(c_TextureSize * c_TextureSize);
     for (size_t i = 0; i < c_TextureSize * c_TextureSize; i++)
     {
@@ -68,26 +68,21 @@ void App::Run()
 void App::DoFrame(float dt)
 {
     
-    // compute shit
+    // compute part
     m_ComputeProgram->Use();
     glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-    // render shit
+    // render part
     m_RenderProgram->Use();
     m_Texture->Bind(0);
     m_PositionTextures[m_FrameCounter % 2]->Bind(1);
+    m_PositionTextures[(m_FrameCounter + 1) % 2]->Bind(2);
+    m_VelocityTextures[m_FrameCounter % 2]->Bind(3);
+    m_VelocityTextures[(m_FrameCounter + 1) % 2]->Bind(4);
     m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetInt("u_TexturePos", 1);
 
-
-    //m_PositionTextures[1].Bind(1);
-
-    m_PositionTextures[(m_FrameCounter + 1) % 2]->Bind(2);
-    /*m_VelocityTextures[m_FrameCounter % 2].Bind(3);
-    m_VelocityTextures[(m_FrameCounter + 1) % 2].Bind(4);*/
-
-    //m_TexturePos->Bind(1);
 
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     //m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
