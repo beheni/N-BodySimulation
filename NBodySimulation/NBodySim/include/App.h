@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "RenderProgram.h"
+#include "ComputeProgram.h"
 #include "Exception.h"
 #include "Window.h"
 #include "Camera.h"
@@ -31,6 +32,7 @@ private:
 	Clock m_Clock;
 
 	std::unique_ptr<RenderProgram> m_RenderProgram;
+	std::unique_ptr<ComputeProgram> m_ComputeProgram;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;
 	std::unique_ptr<Mouse> m_Mouse;

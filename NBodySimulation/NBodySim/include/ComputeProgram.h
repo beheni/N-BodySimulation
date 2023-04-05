@@ -12,4 +12,3 @@ public:
 
 	void Use() const override;
 };
-

@@ -1,6 +1,7 @@
 #pragma once
 #include <glad/glad.h>
 #include <glm/matrix.hpp>
+#include <string>
 
 class ShaderBase
 {
@@ -19,8 +20,8 @@ public:
 protected:
 	void CheckCompilation(GLuint shaderId) const;
 	void CheckLinking(GLuint programId) const;
+	void LoadShaderSource(const std::string& sourcePath, std::string& sourceDest) const;
 
 protected:
 	GLuint m_ShaderProgram;
 };
-

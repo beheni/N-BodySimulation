@@ -6,19 +6,11 @@
 
 ComputeProgram::ComputeProgram(const std::string& sourceFile)
 {
-    std::string shaderString;
-    std::ifstream file;
-    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-    file.open(sourceFile);
-    std::stringstream shaderStream;
-    shaderStream << file.rdbuf();
-    file.close();
-    shaderString = shaderStream.str();
-
-    const char* cStringShader = shaderString.c_str();
+    std::string stringComputeSource;
+    LoadShaderSource(sourceFile, stringComputeSource);
+    const char* cStringComputeSource = stringComputeSource.c_str();
     GLuint shader = glCreateShader(GL_COMPUTE_SHADER);
-    glShaderSource(shader, 1, &cStringShader, NULL);
+    glShaderSource(shader, 1, &cStringComputeSource, NULL);
     glCompileShader(shader);
     CheckCompilation(shader);
 

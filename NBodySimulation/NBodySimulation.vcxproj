@@ -652,6 +652,7 @@
     <None Include="external\include\glm\gtx\vector_angle.inl" />
     <None Include="external\include\glm\gtx\vector_query.inl" />
     <None Include="external\include\glm\gtx\wrap.inl" />
+    <None Include="NBodySim\data\shaders\shader.comp" />
     <None Include="NBodySim\data\shaders\shader.frag" />
     <None Include="NBodySim\data\shaders\shader.vert" />
   </ItemGroup>

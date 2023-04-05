@@ -1,35 +1,19 @@
 #include "RenderProgram.h"
 #include "Exception.h"
 
-#include <sstream>
-#include <fstream>
-
 RenderProgram::RenderProgram(const std::string& vertexSourcePath, const std::string& fragmentSourcePath)
 {
-    std::string vertexShaderString;
-    std::string fragmentShaderString;
-    std::ifstream vertexFile;
-    std::ifstream fragmentFile;
-    vertexFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    fragmentFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    std::string stringVertexSource;
+    std::string stringFragmentSource;
+    LoadShaderSource(vertexSourcePath, stringVertexSource);
+    LoadShaderSource(fragmentSourcePath, stringFragmentSource);
+    const char* cStringVertexSource = stringVertexSource.c_str();
+    const char* cStringFragmentSource = stringFragmentSource.c_str();
 
-    vertexFile.open(vertexSourcePath);
-    fragmentFile.open(fragmentSourcePath);
-    std::stringstream vertexShaderStream;
-    std::stringstream fragmentShaderStream;
-    vertexShaderStream << vertexFile.rdbuf();
-    fragmentShaderStream << fragmentFile.rdbuf();
-    vertexFile.close();
-    fragmentFile.close();
-    vertexShaderString = vertexShaderStream.str();
-    fragmentShaderString = fragmentShaderStream.str();
-
-    const char* cStringVertexShader = vertexShaderString.c_str();
-    const char* cStringFragmentShader = fragmentShaderString.c_str();
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(vertexShader, 1, &cStringVertexShader, NULL);
-    glShaderSource(fragmentShader, 1, &cStringFragmentShader, NULL);
+    glShaderSource(vertexShader, 1, &cStringVertexSource, NULL);
+    glShaderSource(fragmentShader, 1, &cStringFragmentSource, NULL);
 
     glCompileShader(vertexShader);
     CheckCompilation(vertexShader);

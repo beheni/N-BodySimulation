@@ -1415,6 +1415,7 @@
     </None>
     <None Include="NBodySim\data\shaders\shader.vert" />
     <None Include="NBodySim\data\shaders\shader.frag" />
+    <None Include="NBodySim\data\shaders\shader.comp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="header files">

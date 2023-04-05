@@ -5,18 +5,17 @@
 
 class Texture {
 public:
-    unsigned int id;
-    int width;
-    int height;
-    int nrChannels;
-
     Texture(int w, int h);
-
     Texture(const char* filepath);
-
     ~Texture();
 
-    void bind(unsigned int slot = 0) const;
+    void Bind(unsigned int slot = 0) const;
+    void Unbind() const;
 
-    void unbind() const;
+private:
+public:
+    GLuint m_TextureID;
+    int m_Width;
+    int m_Height;
+    int m_NrChannels;
 };

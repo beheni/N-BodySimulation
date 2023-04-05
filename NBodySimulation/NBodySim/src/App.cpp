@@ -9,11 +9,14 @@ App::App()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     m_Window = std::make_unique<Window>(1920, 1080, "N-Body Simulation", true);
-    m_Mesh = std::make_unique<Mesh>(200000, -80, 80);
     m_RenderProgram = std::make_unique<RenderProgram>("./NBodySim/data/shaders/shader.vert", "./NBodySim/data/shaders/shader.frag");
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 250.0f);
+    m_ComputeProgram = std::make_unique<ComputeProgram>("./NBodySim/data/shaders/shader.comp");
+    //m_Texture = std::make_unique<Texture>("./NBodySim/data/textures/star.png");
+    m_Texture = std::make_unique<Texture>(512, 512);
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 40.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 250.0f);
+    m_Mesh = std::make_unique<Mesh>(500'000, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
-    m_Texture = std::make_unique<Texture>("./NBodySim/data/textures/star.png");
+
     m_Mouse->DisableCursor(m_Window->Get());
 }
 
@@ -26,7 +29,7 @@ void App::Run()
 {
     m_Clock.Restart();
     m_RenderProgram->Use();
-    m_RenderProgram->SetInt("ourTexture", 0);
+    //m_Texture->Bind();
 
     while (m_Window->Open())
     {
@@ -45,14 +48,21 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
-    //m_Texture->bind();
-    //m_RenderProgram->Use();
+    m_Texture->Bind();
+    // compute shit
+    m_ComputeProgram->Use();
+    glDispatchCompute(512 / 8, 512 / 4, 1);
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
+    // render shit
+    m_RenderProgram->Use();
+    m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
-    m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
+    //m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
+    m_RenderProgram->SetMat4x4("u_Model", glm::identity<glm::mat4x4>());
     m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());
 
-    m_Window->Clear(0.1f, 0.1f, 0.2f);
+    m_Window->Clear(0.5f, 0.5f, 0.1f);
     m_Mesh->Draw();
 }
 
