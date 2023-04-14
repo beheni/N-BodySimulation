@@ -27,7 +27,7 @@ void main()
             vec4 curPos = imageLoad(posImgInput, curTexel);
 
             vec4 pathVec = curPos - position;
-            float dist = length(pathVec) + 0.1;
+            float dist = max(length(pathVec), 1);
             float invDistCub = 1.0 / (dist * dist * dist);
 
             pathVec = pathVec * invDistCub;

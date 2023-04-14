@@ -7,7 +7,7 @@
 class Exception : public std::exception
 {
 public:
-	Exception(int line, const char* file, const char* msg);
+	Exception(int line, const char* file, const std::string& msg);
 
 	char const* what() const override;
 private:

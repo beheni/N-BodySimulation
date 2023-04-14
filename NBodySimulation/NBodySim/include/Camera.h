@@ -49,7 +49,7 @@ private:
     glm::vec3 m_Right = DEFAULT_RIGHT;
     glm::vec3 m_Up = DEFAULT_UP;
 
-    float m_Speed = 30.0f;
+    float m_Speed = 100.0f;
     float m_Fov;
     float m_AspectRatio;
     float m_Near;

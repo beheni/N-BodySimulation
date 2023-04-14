@@ -13,7 +13,7 @@ App::App()
     m_RenderProgram = std::make_unique<RenderProgram>("./NBodySim/data/shaders/shader.vert", "./NBodySim/data/shaders/shader.frag");
     m_ComputeProgram = std::make_unique<ComputeProgram>("./NBodySim/data/shaders/shader.comp");
     m_Texture = std::make_unique<Texture>("./NBodySim/data/textures/star.png");
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 40.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 250.0f);
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 40.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
     m_Mesh = std::make_unique<Mesh>(c_TextureSize * c_TextureSize, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
 
@@ -22,16 +22,16 @@ App::App()
     m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
     data.clear();
 
-    std::uniform_real_distribution<float> distX(-50, 50);
-    std::uniform_real_distribution<float> distY(-50, 50);
-    std::uniform_real_distribution<float> distZ(-50, 50);
+    std::normal_distribution<float> distX(0, 10);
+    std::normal_distribution<float> distY(0, 10);
+    std::normal_distribution<float> distZ(0, 10);
     std::default_random_engine eng;
     data.reserve(c_TextureSize * c_TextureSize);
     for (size_t i = 0; i < c_TextureSize * c_TextureSize; i++)
     {
-        data.emplace_back(distX(eng), distY(eng), distZ(eng), 0.0f);
+        glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
+        data.emplace_back(pos.x, pos.y, pos.z, 0.0f);
     }
-    //m_TexturePos = std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data());
 
     m_PositionTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
     m_PositionTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
@@ -45,6 +45,11 @@ App::~App()
 
 void App::Run()
 {
+    glDisable(GL_CULL_FACE);
+    //glDisable(GL_DEPTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    glBlendEquation(GL_FUNC_ADD);
     m_Clock.Restart();
     m_RenderProgram->Use();
     while (m_Window->Open())
@@ -64,21 +69,22 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
-    
-    // compute part
-    m_ComputeProgram->Use();
-    m_PositionTextures[m_FrameCounter % 2]->Bind(1);
-    m_PositionTextures[(m_FrameCounter + 1) % 2]->Bind(2);
-    m_VelocityTextures[m_FrameCounter % 2]->Bind(3);
-    m_VelocityTextures[(m_FrameCounter + 1) % 2]->Bind(4);
-    m_ComputeProgram->SetFloat("deltaTime", dt);
-    m_ComputeProgram->SetInt("posImgInput", 1);
-    m_ComputeProgram->SetInt("posImgOutput", 2);
-    m_ComputeProgram->SetInt("velImgInput", 3);
-    m_ComputeProgram->SetInt("velImgOutput", 4);
-    glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
-    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
+    if (m_RunSim)
+    {
+        // compute part
+        m_ComputeProgram->Use();
+        m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
+        m_PositionTextures[(m_FrameCounter + 1) % 2]->BindCompute(2);
+        m_VelocityTextures[m_FrameCounter % 2]->BindCompute(3);
+        m_VelocityTextures[(m_FrameCounter + 1) % 2]->BindCompute(4);
+        m_ComputeProgram->SetFloat("deltaTime", dt);
+        m_ComputeProgram->SetInt("posImgInput", 1);
+        m_ComputeProgram->SetInt("posImgOutput", 2);
+        m_ComputeProgram->SetInt("velImgInput", 3);
+        m_ComputeProgram->SetInt("velImgOutput", 4);
+        glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+    }
     // render part
     m_RenderProgram->Use();
 
@@ -92,8 +98,8 @@ void App::DoFrame(float dt)
 
 
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
-    //m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
-    m_RenderProgram->SetMat4x4("u_Model", glm::identity<glm::mat4x4>());
+    m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
+    //m_RenderProgram->SetMat4x4("u_Model", glm::identity<glm::mat4x4>());
     m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());
 
     m_Window->Clear(0.05f, 0.05f, 0.1f);
@@ -120,6 +126,8 @@ void App::ProcessEvents(float dt)
         m_Camera->Move(CamDir::Up, dt);
     if (glfwGetKey(m_Window->Get(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         m_Camera->Move(CamDir::Down, dt);
+    if (glfwGetKey(m_Window->Get(), GLFW_KEY_TAB) == GLFW_PRESS)
+        m_RunSim = true;
 
     // Camera rotation
     glm::vec2 mouseOffset = m_Mouse->GetOffset(m_Window->Get());

@@ -1,7 +1,7 @@
 #include "Exception.h"
 #include <sstream>
 
-Exception::Exception(int line, const char* file, const char* msg)
+Exception::Exception(int line, const char* file, const std::string& msg)
     :
     m_Line(line), m_File(file), m_Msg(msg)
 {}

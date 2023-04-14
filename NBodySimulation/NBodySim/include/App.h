@@ -44,4 +44,6 @@ private:
 	std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
 	const size_t c_TextureSize = 128;
 
+	bool m_RunSim = false;
+
 };

@@ -16,8 +16,8 @@ out vec2 v_TexCoord;
 void main()
 {
 	vec4 translation = texture(u_TexturePos, a_ID);
-	vec4 position = u_CameraRotation * vec4(a_Pos, 1.0) + translation;
+	vec4 position = u_CameraRotation * vec4(a_Pos, 0.2) + translation;
 	gl_Position = u_ProjView * position;
-	v_Color	= vec3(1 - length(translation) / 20, 1, length(translation) / 20);
+	v_Color	= a_Color;
 	v_TexCoord = a_TexCoord;
 }

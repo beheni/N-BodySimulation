@@ -65,7 +65,6 @@ Texture::~Texture()
 
 void Texture::Bind(unsigned int slot) const
 {
-    glBindImageTexture(slot, m_TextureID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, m_TextureID);
 }
