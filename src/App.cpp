@@ -9,10 +9,10 @@ App::App()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    m_Window = std::make_unique<Window>(1920, 1080, "N-Body Simulation", true);
-    m_RenderProgram = std::make_unique<RenderProgram>("./NBodySim/data/shaders/shader.vert", "./NBodySim/data/shaders/shader.frag");
-    m_ComputeProgram = std::make_unique<ComputeProgram>("./NBodySim/data/shaders/shader.comp");
-    m_Texture = std::make_unique<Texture>("./NBodySim/data/textures/star.png");
+    m_Window = std::make_unique<Window>(1280, 720, "N-Body Simulation");
+    m_RenderProgram = std::make_unique<RenderProgram>("./data/shaders/shader.vert", "./data/shaders/shader.frag");
+    m_ComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/shader.comp");
+    m_Texture = std::make_unique<Texture>("./data/textures/star.png");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 40.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
     m_Mesh = std::make_unique<Mesh>(c_TextureSize * c_TextureSize, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
@@ -46,7 +46,7 @@ App::~App()
 void App::Run()
 {
     glDisable(GL_CULL_FACE);
-    //glDisable(GL_DEPTH);
+    glDisable(GL_DEPTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
     glBlendEquation(GL_FUNC_ADD);
