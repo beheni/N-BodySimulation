@@ -87,6 +87,9 @@
     <ClCompile Include="src\App.cpp">
       <Filter>Public</Filter>
     </ClCompile>
+    <ClCompile Include="src\Menu.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\include\glm\detail\_features.hpp">
@@ -1079,6 +1082,9 @@
     <ClInclude Include="src\App.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="src\Menu.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="external\include\glm\gtc\bitfield.inl">
@@ -1489,5 +1495,8 @@
     <None Include="external\include\glm\gtx\wrap.inl">
       <Filter>Externals</Filter>
     </None>
+    <None Include="data\shaders\shader.comp" />
+    <None Include="data\shaders\shader.frag" />
+    <None Include="data\shaders\shader.vert" />
   </ItemGroup>
 </Project>

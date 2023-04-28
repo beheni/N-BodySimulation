@@ -16,8 +16,6 @@ public:
 	void SwapBuffers();
 	void Clear(float r, float g, float b);
 	void Close();
-	void CaptureCursor();
-	void ReleaseCursor();
 	void SetFullScreen(bool flag);
 
 private:

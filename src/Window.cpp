@@ -73,14 +73,6 @@ void Window::Close()
     glfwSetWindowShouldClose(m_Window, true);
 }
 
-void Window::CaptureCursor()
-{
-}
-
-void Window::ReleaseCursor()
-{
-}
-
 void Window::SetFullScreen(bool flag)
 {
     if (m_FullScreen == flag) return;

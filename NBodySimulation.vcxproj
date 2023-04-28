@@ -24,6 +24,7 @@
     <ClCompile Include="external\include\SOIL2\image_helper.c" />
     <ClCompile Include="external\include\SOIL2\SOIL2.c" />
     <ClCompile Include="external\include\SOIL2\wfETC.c" />
+    <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Clock.cpp" />
@@ -355,6 +356,7 @@
     <ClInclude Include="external\include\SOIL2\stb_image_write.h" />
     <ClInclude Include="external\include\SOIL2\wfETC.h" />
     <ClInclude Include="external\include\stb_image\stb_image.h" />
+    <ClInclude Include="src\Menu.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Clock.h" />
@@ -370,6 +372,9 @@
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\shaders\shader.comp" />
+    <None Include="data\shaders\shader.frag" />
+    <None Include="data\shaders\shader.vert" />
     <None Include="external\include\glm\detail\func_common.inl" />
     <None Include="external\include\glm\detail\func_common_simd.inl" />
     <None Include="external\include\glm\detail\func_exponential.inl" />

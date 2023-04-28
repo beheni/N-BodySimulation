@@ -9,7 +9,7 @@ Mouse::Mouse(GLFWwindow* window)
 void Mouse::DisableCursor(GLFWwindow* window)
 {
 	PlaceInCenter(window);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	m_Fixed = true;
 }
 

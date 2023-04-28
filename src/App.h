@@ -14,6 +14,7 @@
 #include "Clock.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Menu.h"
 
 class App
 {
@@ -29,8 +30,14 @@ private:
 	void PollEvents(float dt);
 
 private:
-	Clock m_Clock;
+	const size_t c_TextureSize = 128;
 
+	bool m_RunSim = false;
+	float m_SimulationSpeed = 1.0f;
+	Clock m_Clock;
+	size_t m_FrameCounter;
+	
+	std::unique_ptr<Menu> m_Menu;
 	std::unique_ptr<RenderProgram> m_RenderProgram;
 	std::unique_ptr<ComputeProgram> m_ComputeProgram;
 	std::unique_ptr<Window> m_Window;
@@ -38,12 +45,6 @@ private:
 	std::unique_ptr<Mouse> m_Mouse;
 	std::unique_ptr<Mesh> m_Mesh;
 	std::unique_ptr<Texture> m_Texture;
-	//std::unique_ptr<Texture> m_TexturePos;
-	size_t m_FrameCounter;
 	std::vector<std::unique_ptr<Texture>> m_PositionTextures;
 	std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
-	const size_t c_TextureSize = 128;
-
-	bool m_RunSim = false;
-
 };

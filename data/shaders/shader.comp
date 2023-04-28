@@ -7,7 +7,7 @@ layout(rgba32f, binding = 3) uniform image2D velImgInput;
 layout(rgba32f, binding = 4) uniform image2D velImgOutput;   
 
 uniform float deltaTime;
-
+float G = 0.01;
 
 void main() 
 {
@@ -36,12 +36,8 @@ void main()
         }
     }
 
-    float G = 0.01;
-
     f = f * G;
-    f = min(f, vec4(10));
     velocity = velocity + f;
-
     imageStore(velImgOutput, texelCoord, velocity);
 
     position = position + velocity * deltaTime;  

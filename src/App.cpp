@@ -13,9 +13,16 @@ App::App()
     m_RenderProgram = std::make_unique<RenderProgram>("./data/shaders/shader.vert", "./data/shaders/shader.frag");
     m_ComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/shader.comp");
     m_Texture = std::make_unique<Texture>("./data/textures/star.png");
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 40.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 150.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
     m_Mesh = std::make_unique<Mesh>(c_TextureSize * c_TextureSize, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
+    m_Menu = std::make_unique<Menu>("Menu", m_Window->Get());
+
+    Menu::EmbraceTheDarkness();
+    m_Menu->AddSliderFloat("Speed", &m_SimulationSpeed, 0.1f, 5.0f);
+    m_Menu->AddCheckbox("Simulation", &m_RunSim);
+    m_Menu->AddButton("Enter FlyCam Mode", [this] {m_Mouse->DisableCursor(m_Window->Get()); });
+    m_Menu->AddText("[press TAB - to exit]");
 
     std::vector<glm::vec4> data(c_TextureSize*c_TextureSize);
     m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
@@ -35,7 +42,6 @@ App::App()
 
     m_PositionTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
     m_PositionTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
-    m_Mouse->DisableCursor(m_Window->Get());
 }
 
 App::~App()
@@ -62,6 +68,8 @@ void App::Run()
         // Rendering stuff goes here
         DoFrame(deltaTime);
 
+        m_Menu->Render();
+
         PollEvents(deltaTime);
         m_Window->SwapBuffers();
     }
@@ -77,7 +85,7 @@ void App::DoFrame(float dt)
         m_PositionTextures[(m_FrameCounter + 1) % 2]->BindCompute(2);
         m_VelocityTextures[m_FrameCounter % 2]->BindCompute(3);
         m_VelocityTextures[(m_FrameCounter + 1) % 2]->BindCompute(4);
-        m_ComputeProgram->SetFloat("deltaTime", dt);
+        m_ComputeProgram->SetFloat("deltaTime", dt * m_SimulationSpeed);
         m_ComputeProgram->SetInt("posImgInput", 1);
         m_ComputeProgram->SetInt("posImgOutput", 2);
         m_ComputeProgram->SetInt("velImgInput", 3);
@@ -85,14 +93,16 @@ void App::DoFrame(float dt)
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     }
+
+    int bufferIndex = (m_RunSim ? m_FrameCounter : 0);
     // render part
     m_RenderProgram->Use();
 
     m_Texture->Bind(0);
-    m_PositionTextures[m_FrameCounter % 2]->Bind(1);
-    m_PositionTextures[(m_FrameCounter + 1) % 2]->Bind(2);
-    m_VelocityTextures[m_FrameCounter % 2]->Bind(3);
-    m_VelocityTextures[(m_FrameCounter + 1) % 2]->Bind(4);
+    m_PositionTextures[bufferIndex % 2]->Bind(1);
+    m_PositionTextures[(bufferIndex + 1) % 2]->Bind(2);
+    m_VelocityTextures[bufferIndex % 2]->Bind(3);
+    m_VelocityTextures[(bufferIndex + 1) % 2]->Bind(4);
     m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetInt("u_TexturePos", 1);
 
@@ -127,7 +137,7 @@ void App::ProcessEvents(float dt)
     if (glfwGetKey(m_Window->Get(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         m_Camera->Move(CamDir::Down, dt);
     if (glfwGetKey(m_Window->Get(), GLFW_KEY_TAB) == GLFW_PRESS)
-        m_RunSim = true;
+        m_Mouse->EnableCursor(m_Window->Get());
 
     // Camera rotation
     glm::vec2 mouseOffset = m_Mouse->GetOffset(m_Window->Get());
