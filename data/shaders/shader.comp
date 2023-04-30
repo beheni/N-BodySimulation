@@ -38,11 +38,13 @@ void main()
 
     f = f * G;
     velocity = velocity + f;
-    imageStore(velImgOutput, texelCoord, velocity);
 
-    position = position + velocity * deltaTime;  
     if(abs(position.x) > boundingBox.x || abs(position.y) > boundingBox.y || abs(position.z) > boundingBox.z){
         position = vec4(0,0,0,0);
+        // or velocity = velocity * vec4(-1,-1,-1,-1);
     }
+    position = position + velocity * deltaTime;  
+
+    imageStore(velImgOutput, texelCoord, velocity);
     imageStore(posImgOutput, texelCoord, position);
 }
