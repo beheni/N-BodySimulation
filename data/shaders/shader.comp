@@ -40,6 +40,9 @@ void main()
     velocity = velocity + f;
     imageStore(velImgOutput, texelCoord, velocity);
 
-    position = position + velocity * deltaTime;  
+    position = position + velocity * deltaTime;
+    if(abs(position.x) > 100 || abs(position.y) > 100 || abs(position.z) > 100){
+        position = vec4(0,0,0,0);
+    }
     imageStore(posImgOutput, texelCoord, position);
 }
