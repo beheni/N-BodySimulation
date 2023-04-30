@@ -9,6 +9,7 @@ public:
     Texture(int w, int h);
     Texture(int w, int h, glm::vec4* data);
     Texture(const char* filepath);
+    Texture(int w, int h, unsigned int* data);
     ~Texture();
 
     void Bind(unsigned int slot = 0) const;

@@ -12,6 +12,7 @@ App::App()
     m_Window = std::make_unique<Window>(1280, 720, "N-Body Simulation");
     m_RenderProgram = std::make_unique<RenderProgram>("./data/shaders/shader.vert", "./data/shaders/shader.frag");
     m_ComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/shader.comp");
+    m_MortonCodesComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/mortonCodes.comp");
     m_Texture = std::make_unique<Texture>("./data/textures/star.png");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 150.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
     m_Mesh = std::make_unique<Mesh>(c_TextureSize * c_TextureSize, -80, 80);
@@ -23,10 +24,14 @@ App::App()
     m_Menu->AddCheckbox("Simulation", &m_RunSim);
     m_Menu->AddButton("Enter FlyCam Mode", [this] {m_Mouse->DisableCursor(m_Window->Get()); });
     m_Menu->AddText("[press TAB - to exit]");
+    //add wasd and arrows
 
     std::vector<glm::vec4> data(c_TextureSize*c_TextureSize);
     m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
     m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
+    
+    std::vector<unsigned int> initMortonCodes(c_TextureSize * c_TextureSize);
+    m_MortonCodesTexture = std::make_unique<Texture>(c_TextureSize, c_TextureSize, initMortonCodes.data());
     data.clear();
 
     std::normal_distribution<float> distX(0, 10);
@@ -79,6 +84,15 @@ void App::DoFrame(float dt)
 {
     if (m_RunSim)
     {
+        // morton codes compute part
+        m_MortonCodesComputeProgram->Use();
+        m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
+        m_MortonCodesTexture->BindCompute(2);
+        m_MortonCodesComputeProgram->SetInt("posImgInput", 1);
+        m_MortonCodesComputeProgram->SetInt("mortonCodesImg", 2);
+        m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
+        glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         // compute part
         m_ComputeProgram->Use();
         m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
@@ -90,7 +104,12 @@ void App::DoFrame(float dt)
         m_ComputeProgram->SetInt("posImgOutput", 2);
         m_ComputeProgram->SetInt("velImgInput", 3);
         m_ComputeProgram->SetInt("velImgOutput", 4);
+        m_ComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
+        std::cout << "hello" << std::endl;
+       
+        //glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
+
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     }
 

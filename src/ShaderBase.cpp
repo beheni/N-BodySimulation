@@ -22,6 +22,17 @@ void ShaderBase::SetFloat(const char* name, float value)
 void ShaderBase::SetIntArray(const char* name, size_t count, const GLint* values)
 {
 	glUniform1iv(glGetUniformLocation(m_ShaderProgram, name), count, values);
+	//seems not to work
+}
+
+void ShaderBase::SetIvec3(const char* name, const GLint* values)
+{
+	glUniform3i(glGetUniformLocation(m_ShaderProgram, name), values[0], values[1], values[2]);
+}
+
+void ShaderBase::SetFvec3(const char* name, const GLfloat* values)
+{
+	glUniform3f(glGetUniformLocation(m_ShaderProgram, name), values[0], values[1], values[2]);
 }
 
 void ShaderBase::SetMat4x4(const char* name, const glm::mat4x4& value)

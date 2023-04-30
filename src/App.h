@@ -30,8 +30,8 @@ private:
 	void PollEvents(float dt);
 
 private:
+	GLfloat m_GeneralBoundingBox[3] = {100.0f, 100.0f, 100.0f};
 	const size_t c_TextureSize = 128;
-
 	bool m_RunSim = false;
 	float m_SimulationSpeed = 1.0f;
 	Clock m_Clock;
@@ -39,6 +39,7 @@ private:
 	
 	std::unique_ptr<Menu> m_Menu;
 	std::unique_ptr<RenderProgram> m_RenderProgram;
+	std::unique_ptr<ComputeProgram> m_MortonCodesComputeProgram;
 	std::unique_ptr<ComputeProgram> m_ComputeProgram;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;
@@ -47,4 +48,5 @@ private:
 	std::unique_ptr<Texture> m_Texture;
 	std::vector<std::unique_ptr<Texture>> m_PositionTextures;
 	std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
+	std::unique_ptr<Texture> m_MortonCodesTexture;
 };

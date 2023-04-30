@@ -7,11 +7,11 @@ layout(rgba32f, binding = 3) uniform image2D velImgInput;
 layout(rgba32f, binding = 4) uniform image2D velImgOutput;   
 
 uniform float deltaTime;
+uniform vec3 boundingBox;
 float G = 0.01;
 
 void main() 
 {
-    uvec3 imgSize = gl_NumWorkGroups * gl_WorkGroupSize;
     ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
   
     vec4 velocity = imageLoad(velImgInput, texelCoord);
@@ -41,5 +41,8 @@ void main()
     imageStore(velImgOutput, texelCoord, velocity);
 
     position = position + velocity * deltaTime;  
+    if(abs(position.x) > boundingBox.x || abs(position.y) > boundingBox.y || abs(position.z) > boundingBox.z){
+        position = vec4(0,0,0,0);
+    }
     imageStore(posImgOutput, texelCoord, position);
 }
