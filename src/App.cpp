@@ -93,6 +93,8 @@ void App::DoFrame(float dt)
         m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
         // compute part
         m_ComputeProgram->Use();
         m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
@@ -109,8 +111,9 @@ void App::DoFrame(float dt)
        
         //glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
-
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 
     int bufferIndex = (m_RunSim ? m_FrameCounter : 0);
