@@ -27,9 +27,9 @@ uint morton3D(float x, float y, float z)
 }
 
 void main(){
-   // ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
-    //vec4 position = imageLoad(posImgInput, texelCoord);
-    //uint mortonCode = morton3D(position.x, position.y, position.z);
-    //imageStore(mortonCodesImg, texelCoord, position);
+   ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+   vec4 position = imageLoad(posImgInput, texelCoord);
+   uint mortonCode = morton3D(position.x, position.y, position.z);
+   imageStore(mortonCodesImg, texelCoord, position);
     
 }
