@@ -33,12 +33,46 @@ App::App()
     std::vector<unsigned int> initMortonCodes(c_TextureSize * c_TextureSize);
     m_MortonCodesTexture = std::make_unique<Texture>(c_TextureSize, c_TextureSize, initMortonCodes.data());
 
-    unsigned int MortonCodesData[128*128];
-    GLuint ssbo;
-    glGenBuffers(1, &ssbo);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    unsigned int posInputData[128 * 128];
+    GLuint posInputSSBO;
+    glGenBuffers(1, &posInputSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, posInputSSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(posInputData), posInputData, GL_STREAM_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, posInputSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+
+    unsigned int posOutputData[128 * 128];
+    GLuint posOutputSSBO;
+    glGenBuffers(1, &posOutputSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, posOutputSSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(posOutputData), posOutputData, GL_STREAM_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, posOutputSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+
+    unsigned int velInputData[128 * 128];
+    GLuint velInputSSBO;
+    glGenBuffers(1, &velInputSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, velInputSSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(velInputData), velInputData, GL_STREAM_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, velInputSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    unsigned int velOutputData[128 * 128];
+    GLuint velOutputSSBO;
+    glGenBuffers(1, &velOutputSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, velOutputSSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(velOutputData), velOutputData, GL_STREAM_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, velOutputSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    unsigned int MortonCodesData[128 * 128];
+    GLuint mortonCodesSSBO;
+    glGenBuffers(1, &mortonCodesSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, mortonCodesSSBO);
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(MortonCodesData), MortonCodesData, GL_STREAM_DRAW);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssbo);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, mortonCodesSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
     data.clear();
@@ -96,9 +130,9 @@ void App::DoFrame(float dt)
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
         m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
-        m_MortonCodesTexture->BindCompute(2);
+        //m_MortonCodesTexture->BindCompute(2);
         m_MortonCodesComputeProgram->SetInt("posImgInput", 1);
-        m_MortonCodesComputeProgram->SetInt("mortonCodesImg", 2);
+        //m_MortonCodesComputeProgram->SetInt("mortonCodesImg", 2);
         m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
