@@ -1,5 +1,14 @@
 #version 430 core
 layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
+
+struct Node
+{
+    
+    int leftChild;
+    int rightChild;
+};
+
+
 layout(std430, binding = 1) buffer posInputBuffer{
     vec3 positionsSSBO[];
 };

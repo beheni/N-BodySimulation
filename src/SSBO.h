@@ -20,12 +20,10 @@ private:
 template<typename Type>
 SSBO<Type>::SSBO(unsigned int size)
 {
-	Type* data = new Type[size]{};
 	glGenBuffers(1, &m_BufferID);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_BufferID);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Type) * size, data, GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Type) * size, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	delete[] data;
 }
 
 template<typename Type>
