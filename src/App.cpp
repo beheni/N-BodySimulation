@@ -30,8 +30,8 @@ App::App()
     //m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
     //m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
     
-    std::vector<unsigned int> initMortonCodes(c_TextureSize * c_TextureSize);
-    m_MortonCodesTexture = std::make_unique<Texture>(c_TextureSize, c_TextureSize, initMortonCodes.data());
+    //std::vector<unsigned int> initMortonCodes(c_TextureSize * c_TextureSize);
+    //m_MortonCodesTexture = std::make_unique<Texture>(c_TextureSize, c_TextureSize, initMortonCodes.data());
 
     std::normal_distribution<float> distX(0, 10);
     std::normal_distribution<float> distY(0, 10);
@@ -52,7 +52,6 @@ App::App()
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 
-    glm::vec4 posOutputData[128 * 128];
     GLuint posOutputSSBO;
     glGenBuffers(1, &posOutputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, posOutputSSBO);
@@ -60,6 +59,8 @@ App::App()
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, posOutputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+    m_PositionBuffers.push_back(posInputSSBO);
+    m_PositionBuffers.push_back(posOutputSSBO);
 
     glm::vec4 velInputData[128 * 128];
     GLuint velInputSSBO;
@@ -76,6 +77,9 @@ App::App()
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(velOutputData), velOutputData, GL_STREAM_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, velOutputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    m_VelocityBuffers.push_back(velInputSSBO);
+    m_VelocityBuffers.push_back(velOutputSSBO);
 
     unsigned int MortonCodesData[128 * 128];
     GLuint mortonCodesSSBO;
@@ -124,10 +128,12 @@ void App::DoFrame(float dt)
     {
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
-        m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
+        //m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
         //m_MortonCodesTexture->BindCompute(2);
-        m_MortonCodesComputeProgram->SetInt("posImgInput", 1);
+        //m_MortonCodesComputeProgram->SetInt("posImgInput", 1);
         //m_MortonCodesComputeProgram->SetInt("mortonCodesImg", 2);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_PositionBuffers[m_FrameCounter % 2]);
+
         m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -145,12 +151,14 @@ void App::DoFrame(float dt)
         m_ComputeProgram->SetInt("velImgInput", 3);
         m_ComputeProgram->SetInt("velImgOutput", 4);*/
         m_ComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
-        std::cout << "hello" << std::endl;
+
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_PositionBuffers[m_FrameCounter % 2]);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_PositionBuffers[(m_FrameCounter + 1) % 2]);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_VelocityBuffers[m_FrameCounter % 2]);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_VelocityBuffers[(m_FrameCounter + 1) % 2]);
        
-        //glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 
@@ -163,8 +171,13 @@ void App::DoFrame(float dt)
     //m_PositionTextures[(bufferIndex + 1) % 2]->Bind(2);
     //m_VelocityTextures[bufferIndex % 2]->Bind(3);
     //m_VelocityTextures[(bufferIndex + 1) % 2]->Bind(4);
-    //m_RenderProgram->SetInt("u_Texture", 0);
+    m_RenderProgram->SetInt("u_Texture", 0);
     //m_RenderProgram->SetInt("u_TexturePos", 1);
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_PositionBuffers[bufferIndex % 2]);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_PositionBuffers[(bufferIndex + 1) % 2]);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_VelocityBuffers[bufferIndex % 2]);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_VelocityBuffers[(bufferIndex + 1) % 2]);
 
 
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());

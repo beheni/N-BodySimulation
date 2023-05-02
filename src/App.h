@@ -46,7 +46,11 @@ private:
 	std::unique_ptr<Mouse> m_Mouse;
 	std::unique_ptr<Mesh> m_Mesh;
 	std::unique_ptr<Texture> m_Texture;
-	std::vector<std::unique_ptr<Texture>> m_PositionTextures;
-	std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
+
+	//std::vector<std::unique_ptr<Texture>> m_PositionTextures;
+	//std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
+
+	std::vector<GLuint> m_PositionBuffers;
+	std::vector<GLuint> m_VelocityBuffers;
 	std::unique_ptr<Texture> m_MortonCodesTexture;
 };
