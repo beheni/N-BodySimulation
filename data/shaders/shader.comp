@@ -27,8 +27,8 @@ void main()
 {
     ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
   
-    vec4 velocity = velInputSSBO[128 * texelCoord.y + texelCoord.x];
-    vec4 position = positionInputSSBO[128 * texelCoord.y + texelCoord.x];
+    vec4 velocity = velInputSSBO[128 * texelCoord.x + texelCoord.y];
+    vec4 position = positionInputSSBO[128 * texelCoord.x + texelCoord.y];
     // change velocity
     vec4 f = vec4(0, 0, 0, 0);
 
@@ -37,10 +37,10 @@ void main()
         for(uint j = 0; j < 128; ++j)
         {
             ivec2 curTexel = ivec2(i, j);
-            vec4 curPos = positionInputSSBO[128 * curTexel.y + curTexel.x];
+            vec4 curPos = positionInputSSBO[128 * curTexel.x + curTexel.y];
 
             vec4 pathVec = curPos - position;
-            float dist = max(length(pathVec), 1);
+            float dist = length(pathVec) + 1;
             float invDistCub = 1.0 / (dist * dist * dist);
 
             pathVec = pathVec * invDistCub;
@@ -62,6 +62,6 @@ void main()
         position = position + velocity * deltaTime;  
     }
 
-    velOutputSSBO[128 * texelCoord.y + texelCoord.x] = velocity;
-    positionOutputSSBO[128 * texelCoord.y + texelCoord.x] = position;
+    velOutputSSBO[128 * texelCoord.x + texelCoord.y] = velocity;
+    positionOutputSSBO[128 * texelCoord.x + texelCoord.y] = position;
 }

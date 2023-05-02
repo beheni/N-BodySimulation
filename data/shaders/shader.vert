@@ -3,7 +3,7 @@
 layout (location = 0) in vec3 a_Pos;
 layout (location = 1) in vec3 a_Color; 
 layout (location = 2) in vec2 a_TexCoord;
-layout (location = 3) in int a_ID;
+layout (location = 3) in float a_ID;
 
 layout(std430, binding = 1) buffer positionsBuffer
 {
@@ -19,7 +19,7 @@ out vec2 v_TexCoord;
 
 void main()
 {
-	vec4 translation = positionsSSBO[a_ID];
+	vec4 translation = positionsSSBO[int(a_ID)];
 	vec4 position = u_CameraRotation * vec4(a_Pos, 0.2) + translation;
 	gl_Position = u_ProjView * position;
 	v_Color	= a_Color;

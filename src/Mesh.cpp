@@ -14,7 +14,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
     struct Vertex
     {
         Vertex() = default;
-        Vertex(unsigned int id, float x, float y, float z, float r, float g, float b, float u, float v)
+        Vertex(float id, float x, float y, float z, float r, float g, float b, float u, float v)
             :
             id(id   ), position({ x, y, z }), color({ r, g, b }), texCoord({ u, v })
         {}
@@ -22,7 +22,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         glm::vec3 position;
         glm::vec3 color;
         glm::vec2 texCoord;
-        int id;
+        float id;
     };
 
     std::vector<Vertex> vertices;
@@ -47,7 +47,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         .Push(3, GL_FLOAT, false) // local position
         .Push(3, GL_FLOAT, false) // color
         .Push(2, GL_FLOAT, false) // texCoords
-        .Push(1, GL_INT, false) // id
+        .Push(1, GL_FLOAT, false) // id
 
         .Bind();
 }
