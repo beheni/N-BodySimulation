@@ -14,30 +14,29 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
     struct Vertex
     {
         Vertex() = default;
-        Vertex(float idx, float idy, float x, float y, float z, float r, float g, float b, float u, float v)
+        Vertex(unsigned int id, float x, float y, float z, float r, float g, float b, float u, float v)
             :
-            id({idx, idy}), position({ x, y, z }), color({ r, g, b }), texCoord({ u, v })
+            id({id}), position({ x, y, z }), color({ r, g, b }), texCoord({ u, v })
         {}
         
         glm::vec3 position;
         glm::vec3 color;
         glm::vec2 texCoord;
-        glm::vec2 id;
+        unsigned int id;
     };
 
     std::vector<Vertex> vertices;
     vertices.reserve(quadsNumber);
 
-    for (int i = 0; i < quadsNumber; i++)
+    for (unsigned int i = 0; i < quadsNumber; i++)
     {
-        glm::vec2 id = {float(i % 128) / 128.0f, float(i / 128) / 128.0f};
-        vertices.emplace_back(id.x, id.y, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
-        vertices.emplace_back(id.x, id.y,  0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f);
-        vertices.emplace_back(id.x, id.y,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
+        vertices.emplace_back(i, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
+        vertices.emplace_back(i,  0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f);
+        vertices.emplace_back(i,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
                              
-        vertices.emplace_back(id.x, id.y,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
-        vertices.emplace_back(id.x, id.y, -0.5f,  0.5f, 0.0f, 0.0, 1.0, 0.0, 0.0f, 1.0f);
-        vertices.emplace_back(id.x, id.y, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
+        vertices.emplace_back(i,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
+        vertices.emplace_back(i, -0.5f,  0.5f, 0.0f, 0.0, 1.0, 0.0, 0.0f, 1.0f);
+        vertices.emplace_back(i, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
     }
 
     glGenBuffers(1, &m_VBO);
@@ -48,7 +47,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         .Push(3, GL_FLOAT, false) // local position
         .Push(3, GL_FLOAT, false) // color
         .Push(2, GL_FLOAT, false) // texCoords
-        .Push(2, GL_FLOAT, false) // id
+        .Push(1, GL_UNSIGNED_INT, false) // id
         .Bind();
 }
 
