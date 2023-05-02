@@ -15,6 +15,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "Menu.h"
+#include "SSBO.h"
 
 class App
 {
@@ -47,10 +48,7 @@ private:
 	std::unique_ptr<Mesh> m_Mesh;
 	std::unique_ptr<Texture> m_Texture;
 
-	//std::vector<std::unique_ptr<Texture>> m_PositionTextures;
-	//std::vector<std::unique_ptr<Texture>> m_VelocityTextures;
-
-	std::vector<GLuint> m_PositionBuffers;
-	std::vector<GLuint> m_VelocityBuffers;
-	std::unique_ptr<Texture> m_MortonCodesTexture;
+	std::vector<SSBO<glm::vec4>> m_PositionBuffers;
+	std::vector<SSBO<glm::vec4>> m_VelocityBuffers;
+	SSBO<unsigned int> m_MortonCodesBuffer;
 };

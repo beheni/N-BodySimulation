@@ -24,67 +24,22 @@ App::App()
     m_Menu->AddCheckbox("Simulation", &m_RunSim);
     m_Menu->AddButton("Enter FlyCam Mode", [this] {m_Mouse->DisableCursor(m_Window->Get()); });
     m_Menu->AddText("[press TAB - to exit]");
-    //add wasd and arrows
+    m_Menu->AddText("['WASD' for control ]");
 
-    glm::vec4* data = new glm::vec4[128*128];
+    std::vector<glm::vec4> data(c_TextureSize * c_TextureSize);
     std::normal_distribution<float> distX(0, 10);
     std::normal_distribution<float> distY(0, 10);
     std::normal_distribution<float> distZ(0, 10);
     std::default_random_engine eng;
-    //data.reserve(c_TextureSize * c_TextureSize);
     for (size_t i = 0; i < c_TextureSize * c_TextureSize; i++)
     {
         glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
         data[i] = glm::vec4(pos.x, pos.y, pos.z, 0.0f);
     }
-
-    GLuint posInputSSBO;
-    glGenBuffers(1, &posInputSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, posInputSSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(data), data, GL_STREAM_DRAW);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, posInputSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-
-    GLuint posOutputSSBO;
-    glGenBuffers(1, &posOutputSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, posOutputSSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(data), data, GL_STREAM_DRAW);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, posOutputSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-    m_PositionBuffers.push_back(posInputSSBO);
-    m_PositionBuffers.push_back(posOutputSSBO);
-    glm::vec4* velInputData = new glm::vec4[128 * 128];
-    GLuint velInputSSBO;
-    glGenBuffers(1, &velInputSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, velInputSSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(velInputData), velInputData, GL_STREAM_DRAW);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, velInputSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-    glm::vec4* velOutputData = new glm::vec4[128 * 128];
-    GLuint velOutputSSBO;
-    glGenBuffers(1, &velOutputSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, velOutputSSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(velOutputData), velOutputData, GL_STREAM_DRAW);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, velOutputSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-    m_VelocityBuffers.push_back(velInputSSBO);
-    m_VelocityBuffers.push_back(velOutputSSBO);
-
-    unsigned int* MortonCodesData = new unsigned int [128 * 128];
-    GLuint mortonCodesSSBO;
-    glGenBuffers(1, &mortonCodesSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, mortonCodesSSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(MortonCodesData), MortonCodesData, GL_STREAM_DRAW);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, mortonCodesSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    delete[] MortonCodesData;
-    delete[] velOutputData;
-    delete[] velInputData;
-    delete[] data;
+    m_PositionBuffers.emplace_back(data.data(), data.size());
+    m_PositionBuffers.emplace_back(data.data(), data.size());
+    m_VelocityBuffers.emplace_back(data.size());
+    m_VelocityBuffers.emplace_back(data.size());
 }
 
 App::~App()
@@ -124,11 +79,7 @@ void App::DoFrame(float dt)
     {
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
-        //m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
-        //m_MortonCodesTexture->BindCompute(2);
-        //m_MortonCodesComputeProgram->SetInt("posImgInput", 1);
-        //m_MortonCodesComputeProgram->SetInt("mortonCodesImg", 2);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_PositionBuffers[m_FrameCounter % 2]);
+        m_PositionBuffers[m_FrameCounter % 2].Bind(1);
 
         m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
@@ -137,21 +88,13 @@ void App::DoFrame(float dt)
 
         // compute part
         m_ComputeProgram->Use();
-       /* m_PositionTextures[m_FrameCounter % 2]->BindCompute(1);
-        m_PositionTextures[(m_FrameCounter + 1) % 2]->BindCompute(2);
-        m_VelocityTextures[m_FrameCounter % 2]->BindCompute(3);
-        m_VelocityTextures[(m_FrameCounter + 1) % 2]->BindCompute(4);*/
         m_ComputeProgram->SetFloat("deltaTime", dt * m_SimulationSpeed);
-      /*  m_ComputeProgram->SetInt("posImgInput", 1);
-        m_ComputeProgram->SetInt("posImgOutput", 2);
-        m_ComputeProgram->SetInt("velImgInput", 3);
-        m_ComputeProgram->SetInt("velImgOutput", 4);*/
         m_ComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
 
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_PositionBuffers[m_FrameCounter % 2]);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_PositionBuffers[(m_FrameCounter + 1) % 2]);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_VelocityBuffers[m_FrameCounter % 2]);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_VelocityBuffers[(m_FrameCounter + 1) % 2]);
+        m_PositionBuffers[m_FrameCounter % 2]       .Bind(1);
+        m_PositionBuffers[(m_FrameCounter + 1) % 2] .Bind(2);
+        m_VelocityBuffers[m_FrameCounter % 2]       .Bind(3);
+        m_VelocityBuffers[(m_FrameCounter + 1) % 2] .Bind(4);
        
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -163,22 +106,15 @@ void App::DoFrame(float dt)
     m_RenderProgram->Use();
 
     m_Texture->Bind(0);
-    //m_PositionTextures[bufferIndex % 2]->Bind(1);
-    //m_PositionTextures[(bufferIndex + 1) % 2]->Bind(2);
-    //m_VelocityTextures[bufferIndex % 2]->Bind(3);
-    //m_VelocityTextures[(bufferIndex + 1) % 2]->Bind(4);
     m_RenderProgram->SetInt("u_Texture", 0);
-    //m_RenderProgram->SetInt("u_TexturePos", 1);
 
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_PositionBuffers[bufferIndex % 2]);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_PositionBuffers[(bufferIndex + 1) % 2]);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_VelocityBuffers[bufferIndex % 2]);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_VelocityBuffers[(bufferIndex + 1) % 2]);
-
+    m_PositionBuffers[bufferIndex % 2]      .Bind(1);
+    m_PositionBuffers[(bufferIndex + 1) % 2].Bind(2);
+    m_VelocityBuffers[bufferIndex % 2]      .Bind(3);
+    m_VelocityBuffers[(bufferIndex + 1) % 2].Bind(4);
 
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
-    //m_RenderProgram->SetMat4x4("u_Model", glm::identity<glm::mat4x4>());
     m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());
 
     m_Window->Clear(0.05f, 0.05f, 0.1f);
