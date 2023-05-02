@@ -32,6 +32,15 @@ App::App()
     
     std::vector<unsigned int> initMortonCodes(c_TextureSize * c_TextureSize);
     m_MortonCodesTexture = std::make_unique<Texture>(c_TextureSize, c_TextureSize, initMortonCodes.data());
+
+    unsigned int MortonCodesData[128*128];
+    GLuint ssbo;
+    glGenBuffers(1, &ssbo);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(MortonCodesData), MortonCodesData, GL_STREAM_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssbo);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
     data.clear();
 
     std::normal_distribution<float> distX(0, 10);
