@@ -24,7 +24,6 @@ SSBO<Type>::SSBO(unsigned int size)
 	glGenBuffers(1, &m_BufferID);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_BufferID);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Type) * size, data, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_BufferID);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	delete[] data;
 }
@@ -35,7 +34,6 @@ SSBO<Type>::SSBO(Type* data, unsigned int size)
 	glGenBuffers(1, &m_BufferID);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_BufferID);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Type) * size, data, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_BufferID);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
@@ -48,8 +46,8 @@ SSBO<Type>::~SSBO()
 template<typename Type>
 void SSBO<Type>::Bind(unsigned int slot) const
 {
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_BufferID);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_BufferID);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_BufferID);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, m_BufferID);
 }
 
 template<typename Type>

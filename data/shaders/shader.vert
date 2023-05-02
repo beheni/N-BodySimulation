@@ -1,9 +1,9 @@
 #version 430 core
 
-layout (location = 0) in vec3 a_Pos;
-layout (location = 1) in vec3 a_Color; 
-layout (location = 2) in vec2 a_TexCoord;
-layout (location = 3) in uint a_ID;
+layout (location = 0) in uint a_ID;
+layout (location = 1) in vec3 a_Pos;
+layout (location = 2) in vec3 a_Color; 
+layout (location = 3) in vec2 a_TexCoord;
 
 layout(std430, binding = 1) buffer positionsBuffer
 {

@@ -44,10 +44,10 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), vertices.data(), GL_STATIC_DRAW);
 
     VertexBufferLayout{}
+        .Push(1, GL_UNSIGNED_INT, false) // id
         .Push(3, GL_FLOAT, false) // local position
         .Push(3, GL_FLOAT, false) // color
         .Push(2, GL_FLOAT, false) // texCoords
-        .Push(1, GL_UNSIGNED_INT, false) // id
         .Bind();
 }
 
