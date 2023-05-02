@@ -34,8 +34,10 @@ private:
 	GLfloat m_GeneralBoundingBox[3] = {100.0f, 100.0f, 100.0f};
 	const size_t c_TextureSize = 128;
 	bool m_RunSim = false;
+	bool m_Rotate = false;
 	float m_SimulationSpeed = 1.0f;
 	Clock m_Clock;
+	float m_Time;
 	size_t m_FrameCounter;
 	
 	std::unique_ptr<Menu> m_Menu;

@@ -22,6 +22,7 @@ App::App()
     Menu::EmbraceTheDarkness();
     m_Menu->AddSliderFloat("Speed", &m_SimulationSpeed, 0.1f, 5.0f);
     m_Menu->AddCheckbox("Simulation", &m_RunSim);
+    m_Menu->AddCheckbox("Rotatation", &m_Rotate);
     m_Menu->AddButton("Enter FlyCam Mode", [this] {m_Mouse->DisableCursor(m_Window->Get()); });
     m_Menu->AddText("[press TAB - to exit]");
     m_Menu->AddText("['WASD' for control ]");
@@ -58,6 +59,7 @@ void App::Run()
     glBlendEquation(GL_FUNC_ADD);
     m_Clock.Restart();
     m_RenderProgram->Use();
+    m_Time = (float)glfwGetTime();
     while (m_Window->Open())
     {
         float deltaTime = m_Clock.Stamp();
@@ -114,9 +116,11 @@ void App::DoFrame(float dt)
     m_VelocityBuffers[bufferIndex % 2]      ->Bind(3);
     m_VelocityBuffers[(bufferIndex + 1) % 2]->Bind(4);
 
+    m_Time = (m_Rotate ? m_Time + dt : m_Time);
+    auto model = glm::rotate(glm::identity<glm::mat4x4>(), m_Time, glm::vec3(0, 1, 0));
+    m_RenderProgram->SetMat4x4("u_Model", model);
     m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
-    m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
     m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());
 
     m_Window->Clear(0.05f, 0.05f, 0.1f);
