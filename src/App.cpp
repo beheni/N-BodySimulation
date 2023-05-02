@@ -41,7 +41,7 @@ App::App()
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
 
-    m_MortonCodesBuffer = SSBO<unsigned int>(c_TextureSize * c_TextureSize);
+    m_MortonCodesBuffer = std::make_unique<SSBO<unsigned int>>(c_TextureSize * c_TextureSize);
 }
 
 App::~App()
@@ -82,7 +82,7 @@ void App::DoFrame(float dt)
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-        m_MortonCodesBuffer.Bind(5);
+        m_MortonCodesBuffer->Bind(5);
         m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -103,18 +103,18 @@ void App::DoFrame(float dt)
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 
-    int bufferIndex = (m_RunSim ? m_FrameCounter : 0);
     // render part
+    int bufferIndex = (m_RunSim ? m_FrameCounter : 0);
     m_RenderProgram->Use();
 
     m_Texture->Bind(0);
-    m_RenderProgram->SetInt("u_Texture", 0);
 
     m_PositionBuffers[bufferIndex % 2]      ->Bind(1);
     m_PositionBuffers[(bufferIndex + 1) % 2]->Bind(2);
     m_VelocityBuffers[bufferIndex % 2]      ->Bind(3);
     m_VelocityBuffers[(bufferIndex + 1) % 2]->Bind(4);
 
+    m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));
     m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());

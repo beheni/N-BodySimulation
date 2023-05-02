@@ -46,7 +46,6 @@ SSBO<Type>::~SSBO()
 template<typename Type>
 void SSBO<Type>::Bind(unsigned int slot) const
 {
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_BufferID);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, m_BufferID);
 }
 

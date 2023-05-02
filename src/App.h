@@ -50,5 +50,5 @@ private:
 
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_PositionBuffers;
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_VelocityBuffers;
-	SSBO<unsigned int> m_MortonCodesBuffer;
+	std::unique_ptr<SSBO<unsigned int>> m_MortonCodesBuffer;
 };

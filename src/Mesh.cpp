@@ -48,7 +48,6 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         .Push(3, GL_FLOAT, false) // color
         .Push(2, GL_FLOAT, false) // texCoords
         .Push(1, GL_FLOAT, false) // id
-
         .Bind();
 }
 

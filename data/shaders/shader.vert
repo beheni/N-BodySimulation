@@ -20,7 +20,7 @@ out vec2 v_TexCoord;
 void main()
 {
 	vec4 translation = positionsSSBO[int(a_ID)];
-	vec4 position = u_CameraRotation * vec4(a_Pos, 0.2) + translation;
+	vec4 position = u_CameraRotation * vec4(a_Pos, 0.2) + u_Model * translation;
 	gl_Position = u_ProjView * position;
 	v_Color	= a_Color;
 	v_TexCoord = a_TexCoord;
