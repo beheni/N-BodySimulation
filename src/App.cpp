@@ -36,10 +36,10 @@ App::App()
         glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
         data[i] = glm::vec4(pos.x, pos.y, pos.z, 0.0f);
     }
-    m_PositionBuffers.emplace_back(data.data(), data.size());
-    m_PositionBuffers.emplace_back(data.data(), data.size());
-    m_VelocityBuffers.emplace_back(data.size());
-    m_VelocityBuffers.emplace_back(data.size());
+    m_PositionBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.data(), data.size()));
+    m_PositionBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.data(), data.size()));
+    m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
+    m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
 }
 
 App::~App()
@@ -79,7 +79,7 @@ void App::DoFrame(float dt)
     {
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
-        m_PositionBuffers[m_FrameCounter % 2].Bind(1);
+        m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
 
         m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
@@ -91,10 +91,10 @@ void App::DoFrame(float dt)
         m_ComputeProgram->SetFloat("deltaTime", dt * m_SimulationSpeed);
         m_ComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
 
-        m_PositionBuffers[m_FrameCounter % 2]       .Bind(1);
-        m_PositionBuffers[(m_FrameCounter + 1) % 2] .Bind(2);
-        m_VelocityBuffers[m_FrameCounter % 2]       .Bind(3);
-        m_VelocityBuffers[(m_FrameCounter + 1) % 2] .Bind(4);
+        m_PositionBuffers[m_FrameCounter % 2]       ->Bind(1);
+        m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
+        m_VelocityBuffers[m_FrameCounter % 2]       ->Bind(3);
+        m_VelocityBuffers[(m_FrameCounter + 1) % 2] ->Bind(4);
        
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -108,10 +108,10 @@ void App::DoFrame(float dt)
     m_Texture->Bind(0);
     m_RenderProgram->SetInt("u_Texture", 0);
 
-    m_PositionBuffers[bufferIndex % 2]      .Bind(1);
-    m_PositionBuffers[(bufferIndex + 1) % 2].Bind(2);
-    m_VelocityBuffers[bufferIndex % 2]      .Bind(3);
-    m_VelocityBuffers[(bufferIndex + 1) % 2].Bind(4);
+    m_PositionBuffers[bufferIndex % 2]      ->Bind(1);
+    m_PositionBuffers[(bufferIndex + 1) % 2]->Bind(2);
+    m_VelocityBuffers[bufferIndex % 2]      ->Bind(3);
+    m_VelocityBuffers[(bufferIndex + 1) % 2]->Bind(4);
 
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     m_RenderProgram->SetMat4x4("u_Model", glm::rotate(glm::identity<glm::mat4x4>(), (float)glfwGetTime(), glm::vec3(0, 1, 0)));

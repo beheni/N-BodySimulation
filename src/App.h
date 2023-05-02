@@ -48,7 +48,7 @@ private:
 	std::unique_ptr<Mesh> m_Mesh;
 	std::unique_ptr<Texture> m_Texture;
 
-	std::vector<SSBO<glm::vec4>> m_PositionBuffers;
-	std::vector<SSBO<glm::vec4>> m_VelocityBuffers;
+	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_PositionBuffers;
+	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_VelocityBuffers;
 	SSBO<unsigned int> m_MortonCodesBuffer;
 };

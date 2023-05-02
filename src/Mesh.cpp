@@ -22,13 +22,13 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         glm::vec3 position;
         glm::vec3 color;
         glm::vec2 texCoord;
-        unsigned int id;
+        int id;
     };
 
     std::vector<Vertex> vertices;
     vertices.reserve(quadsNumber);
 
-    for (unsigned int i = 0; i < quadsNumber; i++)
+    for (int i = 0; i < quadsNumber; i++)
     {
         vertices.emplace_back(i, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
         vertices.emplace_back(i,  0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f);
@@ -47,7 +47,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         .Push(3, GL_FLOAT, false) // local position
         .Push(3, GL_FLOAT, false) // color
         .Push(2, GL_FLOAT, false) // texCoords
-        .Push(1, GL_UNSIGNED_INT, false) // id
+        .Push(1, GL_INT, false) // id
         .Bind();
 }
 
