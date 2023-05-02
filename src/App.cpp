@@ -26,13 +26,7 @@ App::App()
     m_Menu->AddText("[press TAB - to exit]");
     //add wasd and arrows
 
-    glm::vec4 data[128*128];
-    //m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
-    //m_VelocityTextures.push_back(std::make_unique<Texture>(c_TextureSize, c_TextureSize, data.data()));
-    
-    //std::vector<unsigned int> initMortonCodes(c_TextureSize * c_TextureSize);
-    //m_MortonCodesTexture = std::make_unique<Texture>(c_TextureSize, c_TextureSize, initMortonCodes.data());
-
+    glm::vec4* data = new glm::vec4[128*128];
     std::normal_distribution<float> distX(0, 10);
     std::normal_distribution<float> distY(0, 10);
     std::normal_distribution<float> distZ(0, 10);
@@ -61,8 +55,7 @@ App::App()
 
     m_PositionBuffers.push_back(posInputSSBO);
     m_PositionBuffers.push_back(posOutputSSBO);
-
-    glm::vec4 velInputData[128 * 128];
+    glm::vec4* velInputData = new glm::vec4[128 * 128];
     GLuint velInputSSBO;
     glGenBuffers(1, &velInputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, velInputSSBO);
@@ -70,7 +63,7 @@ App::App()
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, velInputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-    glm::vec4 velOutputData[128 * 128];
+    glm::vec4* velOutputData = new glm::vec4[128 * 128];
     GLuint velOutputSSBO;
     glGenBuffers(1, &velOutputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, velOutputSSBO);
@@ -81,14 +74,17 @@ App::App()
     m_VelocityBuffers.push_back(velInputSSBO);
     m_VelocityBuffers.push_back(velOutputSSBO);
 
-    unsigned int MortonCodesData[128 * 128];
+    unsigned int* MortonCodesData = new unsigned int [128 * 128];
     GLuint mortonCodesSSBO;
     glGenBuffers(1, &mortonCodesSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, mortonCodesSSBO);
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(MortonCodesData), MortonCodesData, GL_STREAM_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, mortonCodesSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
+    delete[] MortonCodesData;
+    delete[] velOutputData;
+    delete[] velInputData;
+    delete[] data;
 }
 
 App::~App()
