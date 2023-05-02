@@ -40,6 +40,8 @@ App::App()
     m_PositionBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.data(), data.size()));
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
+
+    m_MortonCodesBuffer = SSBO<unsigned int>(c_TextureSize * c_TextureSize);
 }
 
 App::~App()
@@ -80,7 +82,7 @@ void App::DoFrame(float dt)
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-
+        m_MortonCodesBuffer.Bind(5);
         m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
