@@ -8,7 +8,7 @@ layout (location = 3) in uint a_ID;
 uniform mat4x4 u_ProjView;
 uniform mat4x4 u_Model;
 uniform mat4x4 u_CameraRotation;
-layout(std430, binding = 4) buffer positionsBuffer
+layout(std430, binding = 1) buffer positionsBuffer
 {
     vec4 positionsSSBO[];
 };

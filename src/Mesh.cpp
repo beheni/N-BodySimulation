@@ -16,7 +16,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         Vertex() = default;
         Vertex(unsigned int id, float x, float y, float z, float r, float g, float b, float u, float v)
             :
-            id({id}), position({ x, y, z }), color({ r, g, b }), texCoord({ u, v })
+            id(id   ), position({ x, y, z }), color({ r, g, b }), texCoord({ u, v })
         {}
         
         glm::vec3 position;

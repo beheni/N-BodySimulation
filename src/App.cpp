@@ -33,7 +33,7 @@ App::App()
     std::vector<unsigned int> initMortonCodes(c_TextureSize * c_TextureSize);
     m_MortonCodesTexture = std::make_unique<Texture>(c_TextureSize, c_TextureSize, initMortonCodes.data());
 
-    unsigned int posInputData[128 * 128];
+    glm::vec4 posInputData[128 * 128];
     GLuint posInputSSBO;
     glGenBuffers(1, &posInputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, posInputSSBO);
@@ -42,7 +42,7 @@ App::App()
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 
-    unsigned int posOutputData[128 * 128];
+    glm::vec4 posOutputData[128 * 128];
     GLuint posOutputSSBO;
     glGenBuffers(1, &posOutputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, posOutputSSBO);
@@ -51,7 +51,7 @@ App::App()
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 
-    unsigned int velInputData[128 * 128];
+    glm::vec4 velInputData[128 * 128];
     GLuint velInputSSBO;
     glGenBuffers(1, &velInputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, velInputSSBO);
@@ -59,7 +59,7 @@ App::App()
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, velInputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-    unsigned int velOutputData[128 * 128];
+    glm::vec4 velOutputData[128 * 128];
     GLuint velOutputSSBO;
     glGenBuffers(1, &velOutputSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, velOutputSSBO);
