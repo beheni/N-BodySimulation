@@ -1,6 +1,7 @@
 #version 430 core
 layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
 
+uniform float numberOfParticlesSqrt;
 struct TreeNode_t 
 {
 	vec4 centerOfMass;
@@ -32,7 +33,7 @@ layout(std430, binding = 6) buffer treeNodesBuffer
 
 int sharedPrefixLength(int i, int j)
 {
-	if(j < 0 || j >= 16384) return -1;
+	if(j < 0 || j >= numberOfParticlesSqrt * numberOfParticlesSqrt) return -1;
 	uint mi = mortonCodesSSBO[i];
 	uint mj = mortonCodesSSBO[j];
 
@@ -53,7 +54,7 @@ int sharedPrefixLength(int i, int j)
 void main()
 {
 	ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
-	int i = 128 * texelCoord.x + texelCoord.y;
+	int i = int(numberOfParticlesSqrt * numberOfParticlesSqrt + numberOfParticlesSqrt * texelCoord.x + texelCoord.y);
 	int direction = sign(sharedPrefixLength(i, i + 1) - sharedPrefixLength(i, i - 1));
 	
 	int minPrefixLength =  sharedPrefixLength(i, i - direction);
