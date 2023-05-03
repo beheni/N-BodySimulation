@@ -29,6 +29,21 @@ layout(std430, binding = 6) buffer treeNodesBuffer
 
 uniform int u_NumberOfParticlesSqrt;
 
+vec4 findCenterOfMass(int i, int j)
+{
+	vec4 centerOfMass = vec4(0, 0, 0, 0);
+	int left = min(i, j);
+	int right = max(i, j);
+	int numberOfChildren = right - left + 1;
+	int totalMass = numberOfChildren * 30000;
+	for (int i = 0; i<numberOfChildren; ++i) {
+		centerOfMass.x += (30000 * posInputSSBO[left + i].x)/totalMass;
+		centerOfMass.y += (30000 * posInputSSBO[left + i].y)/totalMass;
+		centerOfMass.z += (30000 * posInputSSBO[left + i].z)/totalMass;
+	}
+	return centerOfMass;
+};
+
 int sharedPrefixLength(int i, int j)
 {
 	if(j < 0 || j >= u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt) return -1;
@@ -51,6 +66,60 @@ int sharedPrefixLength(int i, int j)
 
 void main()
 {
-	float k = 1.0;
-	k = k + u_NumberOfParticlesSqrt; 
+	ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+	int i = u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y;
+	int direction = sign(sharedPrefixLength(i, i + 1) - sharedPrefixLength(i, i - 1));
+
+	int minPrefixLength =  sharedPrefixLength(i, i - direction);
+	int upperBound = 2;
+
+	while(sharedPrefixLength(i, i + upperBound*direction) > minPrefixLength)
+	{
+		upperBound *= 2;
+	}
+
+	int l = 0;
+    int t = upperBound/2;
+
+    for(int k = 0; k<log2(u_NumberOfParticlesSqrt)+2; k++){
+        if (sharedPrefixLength(i, i + (l + t) * direction) > minPrefixLength)
+		{
+            l = l+t;
+        }
+        if(t==1) break;
+        t /= 2;
+    }
+
+	int j = i + l * direction;
+
+	int dNode = sharedPrefixLength(i, j);
+	int splitPos = 0;
+	float ft = float(l)/2.;
+    for(int k = 0; k<log2(u_NumberOfParticlesSqrt)+2; k++){
+        t = int(max(1.,ceil(ft)));
+        if(sharedPrefixLength(i, i + (splitPos + t) * direction ) > dNode){
+            splitPos += t;
+        }
+		if(t==1) break;
+        ft /= 2.;
+    }
+	int biggestLeftChild = i + splitPos * direction + min(0, direction);
+	int leftChildIndex;
+	int rightChildIndex;
+	if (min(i, j) == biggestLeftChild) {
+		leftChildIndex = biggestLeftChild;
+		treeNodesSSBO[leftChildIndex] = TreeNode_t(posInputSSBO[leftChildIndex], 30000, ivec2(-1, -1), 1.0);
+	}
+	else {
+		leftChildIndex = biggestLeftChild + u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt;
+	}
+	if (max(i, j) == biggestLeftChild + 1) {
+		rightChildIndex = biggestLeftChild + 1;
+		treeNodesSSBO[rightChildIndex] = TreeNode_t(posInputSSBO[rightChildIndex], 30000, ivec2(-1, -1), 1.0);
+	}
+	else {
+		rightChildIndex = biggestLeftChild + 1 + u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt;
+	}
+	vec4 centerMass = findCenterOfMass(i, j);
+	treeNodesSSBO[u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt + i] = TreeNode_t(centerMass, l*3000, ivec2(leftChildIndex, rightChildIndex), 1.0);
 }

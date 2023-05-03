@@ -26,20 +26,19 @@ float G = 0.0001;
 
 void main() 
 {
-    int numberOfParticlesSqrtInt = int(u_NumberOfParticlesSqrt);
     ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
   
-    vec4 velocity = velInputSSBO[128 * texelCoord.x + texelCoord.y];
-    vec4 position = positionInputSSBO[128 * texelCoord.x + texelCoord.y];
+    vec4 velocity = velInputSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y];
+    vec4 position = positionInputSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y];
     // change velocity
     vec4 f = vec4(0, 0, 0, 0);
 
-    for(uint i = 0; i < numberOfParticlesSqrtInt; ++i)
+    for(uint i = 0; i < u_NumberOfParticlesSqrt; ++i)
     {
-        for(uint j = 0; j < numberOfParticlesSqrtInt; ++j)
+        for(uint j = 0; j < u_NumberOfParticlesSqrt; ++j)
         {
             ivec2 curTexel = ivec2(i, j);
-            vec4 curPos = positionInputSSBO[numberOfParticlesSqrtInt * curTexel.x + curTexel.y];
+            vec4 curPos = positionInputSSBO[u_NumberOfParticlesSqrt * curTexel.x + curTexel.y];
 
             vec4 pathVec = curPos - position;
             float dist = length(pathVec) + 1;
@@ -64,6 +63,6 @@ void main()
         position = position + velocity * u_DeltaTime;  
     }
 
-    velOutputSSBO[numberOfParticlesSqrtInt * texelCoord.x + texelCoord.y] = velocity;
-    positionOutputSSBO[numberOfParticlesSqrtInt * texelCoord.x + texelCoord.y] = position;
+    velOutputSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y] = velocity;
+    positionOutputSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y] = position;
 }
