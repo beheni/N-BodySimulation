@@ -112,13 +112,12 @@ void App::DoFrame(float dt)
         m_TraversingTreeComputeProgram->SetFloat("u_DeltaTime", dt * m_SimulationSpeed);
         m_TraversingTreeComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
         m_TraversingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
-
+        m_TraversingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
         m_PositionBuffers[m_FrameCounter % 2]       ->Bind(1);
         m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
         m_VelocityBuffers[m_FrameCounter % 2]       ->Bind(3);
         m_VelocityBuffers[(m_FrameCounter + 1) % 2] ->Bind(4);
         m_TreeNodesBuffer->Bind(6);
-
         glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);

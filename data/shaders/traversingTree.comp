@@ -37,8 +37,9 @@ layout(std430, binding = 6) buffer treeNodesBuffer
 uniform float u_DeltaTime;
 uniform int u_NumberOfParticlesSqrt;
 uniform vec3 u_BoundingBox;
+uniform int u_ParticleMass;
 
-float G = 0.01;
+float G = 6.6743 * pow(10, -11);
 
 bool considerSingleBody(vec4 curNodePosition, vec4 centerOfMass, float boundingBoxMetric)
 {
@@ -83,7 +84,7 @@ void main()
             float dist = length(pathVec) + 1;
             float invDistCub = 1.0 / (dist * dist * dist);
 
-            pathVec = pathVec * invDistCub;
+            pathVec = pathVec * curNode.totalMass * invDistCub;
             f = f + pathVec;
         } else {
             // proceed with traversal and add child nodes to the stack
@@ -94,7 +95,7 @@ void main()
     }
     while (curNode != NullNode);
 
-    f = f * G;
+    f = f * G * u_ParticleMass;
     velocity = velocity + f;
     position = position + velocity * u_DeltaTime;  
 
