@@ -31,13 +31,15 @@ private:
 	void PollEvents(float dt);
 
 private:
-	GLfloat m_GeneralBoundingBox[3] = {100.0f, 100.0f, 100.0f};
-	const size_t c_TextureSize = 128;
+	const glm::vec3 c_GeneralBoundingBox = {100.0f, 100.0f, 100.0f};
+	const size_t c_NumberParticlesSqrt = 128;
+
+	float m_SimulationSpeed = 1.0f;
 	bool m_RunSim = false;
 	bool m_Rotate = false;
-	float m_SimulationSpeed = 1.0f;
-	Clock m_Clock;
+
 	float m_Time;
+	Clock m_Clock;
 	size_t m_FrameCounter;
 
 	#pragma pack(4)
@@ -54,6 +56,7 @@ private:
 	std::unique_ptr<RenderProgram> m_RenderProgram;
 	std::unique_ptr<ComputeProgram> m_MortonCodesComputeProgram;
 	std::unique_ptr<ComputeProgram> m_ComputeProgram;
+	std::unique_ptr<ComputeProgram> m_BuildingTreeComputeProgram;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;
 	std::unique_ptr<Mouse> m_Mouse;

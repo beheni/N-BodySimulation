@@ -5,7 +5,7 @@ Menu::Menu(const std::string& title, GLFWwindow* window, int flags) : m_Title(ti
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 150");
+	ImGui_ImplOpenGL3_Init("#version 430");
 }
 
 Menu::~Menu()

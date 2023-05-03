@@ -6,38 +6,50 @@
 
 void ShaderBase::SetBool(const char* name, bool value)
 {
-	glUniform1i(glGetUniformLocation(m_ShaderProgram, name), static_cast<int>(value));
+	glUniform1i(FindUniformLocation(name), static_cast<int>(value));
 }
 
 void ShaderBase::SetInt(const char* name, int value)
 {
-	glUniform1i(glGetUniformLocation(m_ShaderProgram, name), value);
+	glUniform1i(FindUniformLocation(name), value);
 }
 
 void ShaderBase::SetFloat(const char* name, float value)
 {
-	glUniform1f(glGetUniformLocation(m_ShaderProgram, name), value);
+	glUniform1f(FindUniformLocation(name), value);
 }
 
 void ShaderBase::SetIntArray(const char* name, size_t count, const GLint* values)
 {
-	glUniform1iv(glGetUniformLocation(m_ShaderProgram, name), count, values);
+	glUniform1iv(FindUniformLocation(name), count, values);
 	//seems not to work
 }
 
-void ShaderBase::SetIvec3(const char* name, const GLint* values)
+void ShaderBase::SetIvec3(const char* name, const glm::ivec3& value)
 {
-	glUniform3i(glGetUniformLocation(m_ShaderProgram, name), values[0], values[1], values[2]);
+	glUniform3i(FindUniformLocation(name), value[0], value[1], value[2]);
 }
 
-void ShaderBase::SetFvec3(const char* name, const GLfloat* values)
+void ShaderBase::SetFvec3(const char* name, const glm::vec3& value)
 {
-	glUniform3f(glGetUniformLocation(m_ShaderProgram, name), values[0], values[1], values[2]);
+	glUniform3f(FindUniformLocation(name), value[0], value[1], value[2]);
 }
 
 void ShaderBase::SetMat4x4(const char* name, const glm::mat4x4& value)
 {
-	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram, name), 1, GL_FALSE, &value[0][0]);
+	glUniformMatrix4fv(FindUniformLocation(name), 1, GL_FALSE, &value[0][0]);
+}
+
+GLint ShaderBase::FindUniformLocation(const char* name)
+{
+	GLint location = glGetUniformLocation(m_ShaderProgram, name);
+
+	if (location == -1)
+	{
+		throw EXCEPTION(std::string("Uniform [") + name + "] location is not found");
+	}
+
+	return location;
 }
 
 void ShaderBase::CheckCompilation(GLuint shaderId) const

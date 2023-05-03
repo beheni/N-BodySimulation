@@ -367,6 +367,7 @@
     <ClInclude Include="src\RenderProgram.h" />
     <ClInclude Include="src\SafeWindows.h" />
     <ClInclude Include="src\ShaderBase.h" />
+    <ClInclude Include="src\SSBO.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\VertexBufferLayout.h" />
     <ClInclude Include="src\Window.h" />
