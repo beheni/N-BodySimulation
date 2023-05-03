@@ -23,7 +23,7 @@ App::App()
     Menu::EmbraceTheDarkness();
     m_Menu->AddSliderFloat("Speed", &m_SimulationSpeed, 0.1f, 5.0f);
     m_Menu->AddCheckbox("Simulation", &m_RunSim);
-    m_Menu->AddCheckbox("Rotatation", &m_Rotate);
+    m_Menu->AddCheckbox("Rotation", &m_Rotate);
     m_Menu->AddButton("Enter FlyCam Mode", [this] {m_Mouse->DisableCursor(m_Window->Get()); });
     m_Menu->AddText("[press TAB - to exit]");
     m_Menu->AddText("['WASD' for control ]");
@@ -87,7 +87,7 @@ void App::DoFrame(float dt)
     {
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
-        m_MortonCodesComputeProgram->SetFloat("numberOfParticlesSqrt", c_NumberParticlesSqrt);
+        m_MortonCodesComputeProgram->SetFloat("u_numberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
         m_MortonCodesBuffer->Bind(5);
 
@@ -97,7 +97,7 @@ void App::DoFrame(float dt)
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
         m_BuildingTreeComputeProgram->Use();
-        m_BuildingTreeComputeProgram->SetFloat("numberOfParticlesSqrt", c_NumberParticlesSqrt);
+        m_BuildingTreeComputeProgram->SetFloat("u_numberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
         m_VelocityBuffers[m_FrameCounter % 2]->Bind(3);
         m_MortonCodesBuffer->Bind(5);
@@ -110,7 +110,7 @@ void App::DoFrame(float dt)
         m_ComputeProgram->Use();
         m_ComputeProgram->SetFloat("deltaTime", dt * m_SimulationSpeed);
         m_ComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
-        m_ComputeProgram->SetFloat("numberOfParticlesSqrt", c_NumberParticlesSqrt);
+        m_ComputeProgram->SetFloat("u_numberOfParticlesSqrt", c_NumberParticlesSqrt);
 
         m_PositionBuffers[m_FrameCounter % 2]       ->Bind(1);
         m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
