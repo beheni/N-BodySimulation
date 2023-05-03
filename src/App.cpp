@@ -13,7 +13,7 @@ App::App()
     m_RenderProgram = std::make_unique<RenderProgram>("./data/shaders/shader.vert", "./data/shaders/shader.frag");
     m_ComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/shader.comp");
     m_MortonCodesComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/mortonCodes.comp");
-   // m_BuildingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/buldingTree.comp");
+    m_BuildingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/buildingTree.comp");
     m_Texture = std::make_unique<Texture>("./data/textures/star.png");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 150.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
     m_Mesh = std::make_unique<Mesh>(c_NumberParticlesSqrt * c_NumberParticlesSqrt, -80, 80);
@@ -96,14 +96,15 @@ void App::DoFrame(float dt)
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-      //  m_BuildingTreeComputeProgram->Use();
-        //m_BuildingTreeComputeProgram->SetInt("numberOfParticlesSqrt", c_NumberParticlesSqrt);
-        //m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-       /* m_VelocityBuffers[m_FrameCounter % 2]->Bind(3);
+        m_BuildingTreeComputeProgram->Use();
+        m_BuildingTreeComputeProgram->SetFloat("numberOfParticlesSqrt", c_NumberParticlesSqrt);
+        m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
+        m_VelocityBuffers[m_FrameCounter % 2]->Bind(3);
         m_MortonCodesBuffer->Bind(5);
         m_TreeNodesBuffer->Bind(6);
         glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);*/
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
         // compute part
         m_ComputeProgram->Use();

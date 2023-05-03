@@ -12,7 +12,7 @@ struct TreeNode_t
 
 
 layout(std430, binding = 1) buffer posInputBuffer{
-    vec3 posInputSSBO[];
+    vec4 posInputSSBO[];
 };
 
 layout(std430, binding = 3) buffer velInputBuffer
@@ -53,41 +53,6 @@ int sharedPrefixLength(int i, int j)
 
 void main()
 {
-	ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
-	int i = int(numberOfParticlesSqrt * numberOfParticlesSqrt + numberOfParticlesSqrt * texelCoord.x + texelCoord.y);
-	int direction = sign(sharedPrefixLength(i, i + 1) - sharedPrefixLength(i, i - 1));
-	
-	int minPrefixLength =  sharedPrefixLength(i, i - direction);
-	int upperBound = 2;
-
-	while(sharedPrefixLength(i, i + upperBound*direction) > minPrefixLength)
-	{
-		upperBound *= 2;
-	}
-
-	int l = 0;
-    int t = upperBound/2;
-
-    for(int k = 0; k<16; k++){
-        if (sharedPrefixLength(i, i + (l + t) * direction) > minPrefixLength)
-		{
-            l = l+t;
-        }
-        if(t==1) break;
-        t /= 2;
-    }
-	 
-	int j = i + l * direction;
-
-	int dNode = sharedPrefixLength(i, j);
-	int splitPos = 0;
-	float ft = float(l)/2.;
-    for(int k = 0; k<16; k++){
-        t = int(max(1.,ceil(ft)));
-        if(sharedPrefixLength(i, i + (splitPos + t) * direction ) > dNode){
-            splitPos += t;
-        }
-        ft /= 2.;
-    }
-	int biggestLeftChild = i + splitPos * direction + min(0, direction);
+	float k = 1.0;
+	k = k + numberOfParticlesSqrt; 
 }
