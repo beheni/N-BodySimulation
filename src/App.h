@@ -40,7 +40,7 @@ private:
 
 	float m_Time;
 	Clock m_Clock;
-	size_t m_FrameCounter;
+	size_t m_FrameCounter = 0;
 
 	#pragma pack(4)
 	struct TreeNode_t 
@@ -55,8 +55,8 @@ private:
 	std::unique_ptr<Menu> m_Menu;
 	std::unique_ptr<RenderProgram> m_RenderProgram;
 	std::unique_ptr<ComputeProgram> m_MortonCodesComputeProgram;
-	std::unique_ptr<ComputeProgram> m_ComputeProgram;
 	std::unique_ptr<ComputeProgram> m_BuildingTreeComputeProgram;
+	std::unique_ptr<ComputeProgram> m_ComputeProgram;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;
 	std::unique_ptr<Mouse> m_Mouse;
