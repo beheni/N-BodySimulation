@@ -16,10 +16,12 @@ public:
 	void SetFloat(const char* name, float value);
 	void SetIntArray(const char* name, size_t count, const GLint* values);
 	void SetMat4x4(const char* name, const glm::mat4x4& value);
-	void SetIvec3(const char* name, const GLint* values);
-	void SetFvec3(const char* name, const GLfloat* values);
+	void SetIvec3(const char* name, const glm::ivec3& value);
+	void SetFvec3(const char* name, const glm::vec3& value);
 
 protected:
+
+	GLint FindUniformLocation(const char* name);
 	void CheckCompilation(GLuint shaderId) const;
 	void CheckLinking(GLuint programId) const;
 	void LoadShaderSource(const std::string& sourcePath, std::string& sourceDest) const;

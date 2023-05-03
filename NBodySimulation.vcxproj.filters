@@ -1085,6 +1085,7 @@
     <ClInclude Include="src\Menu.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\SSBO.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="external\include\glm\gtc\bitfield.inl">

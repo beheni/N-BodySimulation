@@ -31,7 +31,8 @@ App::App()
     std::normal_distribution<float> distX(0, 10);
     std::normal_distribution<float> distY(0, 10);
     std::normal_distribution<float> distZ(0, 10);
-    std::default_random_engine eng;
+    auto seed = (unsigned int)(glfwGetTime() * 100.0);
+    std::default_random_engine eng(seed);
     for (size_t i = 0; i < c_TextureSize * c_TextureSize; i++)
     {
         glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
@@ -81,19 +82,20 @@ void App::DoFrame(float dt)
 {
     if (m_RunSim)
     {
+        /*
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
         m_MortonCodesBuffer->Bind(5);
-        m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
+        m_MortonCodesComputeProgram->SetFvec3("boundingBox", c_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
+        */
         // compute part
         m_ComputeProgram->Use();
         m_ComputeProgram->SetFloat("deltaTime", dt * m_SimulationSpeed);
-        m_ComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
+        m_ComputeProgram->SetFvec3("boundingBox", c_GeneralBoundingBox);
 
         m_PositionBuffers[m_FrameCounter % 2]       ->Bind(1);
         m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
@@ -106,15 +108,13 @@ void App::DoFrame(float dt)
     }
 
     // render part
-    int bufferIndex = (m_RunSim ? m_FrameCounter : 0);
+    int bufferIndex = (m_RunSim ? (m_FrameCounter) : 0);
     m_RenderProgram->Use();
 
     m_Texture->Bind(0);
 
     m_PositionBuffers[bufferIndex % 2]      ->Bind(1);
     m_PositionBuffers[(bufferIndex + 1) % 2]->Bind(2);
-    m_VelocityBuffers[bufferIndex % 2]      ->Bind(3);
-    m_VelocityBuffers[(bufferIndex + 1) % 2]->Bind(4);
 
     m_Time = (m_Rotate ? m_Time + dt : m_Time);
     auto model = glm::rotate(glm::identity<glm::mat4x4>(), m_Time, glm::vec3(0, 1, 0));
@@ -122,6 +122,7 @@ void App::DoFrame(float dt)
     m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
     m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());
+    m_RenderProgram->SetFvec3("u_CameraPosition", m_Camera->GetPosition());
 
     m_Window->Clear(0.05f, 0.05f, 0.1f);
     m_Mesh->Draw();

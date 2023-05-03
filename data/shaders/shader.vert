@@ -13,6 +13,7 @@ layout(std430, binding = 1) buffer positionsBuffer
 uniform mat4x4 u_ProjView;
 uniform mat4x4 u_Model;
 uniform mat4x4 u_CameraRotation;
+uniform vec3   u_CameraPosition;
 
 out vec3 v_Color;
 out vec2 v_TexCoord;
@@ -20,7 +21,11 @@ out vec2 v_TexCoord;
 void main()
 {
 	vec4 translation = positionsSSBO[int(a_ID)];
-	vec4 position = u_CameraRotation * vec4(a_Pos, 0.2) + u_Model * translation;
+	vec4 starLocation = u_Model * translation;
+
+	float scale = length(starLocation.xyz - u_CameraPosition) / 400.0f;
+	vec4 position = u_CameraRotation * vec4(a_Pos * scale, 0.2) + starLocation;
+
 	gl_Position = u_ProjView * position;
 	v_Color	= a_Color;
 	v_TexCoord = a_TexCoord;
