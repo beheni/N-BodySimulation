@@ -13,11 +13,7 @@ layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
 layout(std430, binding = 1) buffer posInputBuffer
 {
     vec4 posInputSSBO[];
-};
-layout(std430, binding = 3) buffer velInputBuffer
-{
-    vec4 velInputSSBO[];
-};  
+}; 
 layout(std430, binding = 5) buffer mortonCodeBuffer
 {
     uint mortonCodesSSBO[];
@@ -28,6 +24,7 @@ layout(std430, binding = 6) buffer treeNodesBuffer
 };
 
 uniform int u_NumberOfParticlesSqrt;
+uniform int u_ParticleMass;
 
 float calculateBoundingBox(int i, int j)
 {
@@ -60,11 +57,11 @@ vec4 findCenterOfMass(int i, int j)
 	int left = min(i, j);
 	int right = max(i, j);
 	int numberOfChildren = right - left + 1;
-	int totalMass = numberOfChildren * 30000;
+	int totalMass = numberOfChildren * u_ParticleMass;
 	for (int i = 0; i<numberOfChildren; ++i) {
-		centerOfMass.x += (30000 * posInputSSBO[left + i].x)/totalMass;
-		centerOfMass.y += (30000 * posInputSSBO[left + i].y)/totalMass;
-		centerOfMass.z += (30000 * posInputSSBO[left + i].z)/totalMass;
+		centerOfMass.x += (u_ParticleMass * posInputSSBO[left + i].x)/totalMass;
+		centerOfMass.y += (u_ParticleMass * posInputSSBO[left + i].y)/totalMass;
+		centerOfMass.z += (u_ParticleMass * posInputSSBO[left + i].z)/totalMass;
 	}
 	return centerOfMass;
 };
@@ -133,19 +130,19 @@ void main()
 	int rightChildIndex;
 	if (min(i, j) == biggestLeftChild) {
 		leftChildIndex = biggestLeftChild;
-		treeNodesSSBO[leftChildIndex] = TreeNode_t(posInputSSBO[leftChildIndex], 30000, ivec2(-1, -1), 1.0);
+		treeNodesSSBO[leftChildIndex] = TreeNode_t(posInputSSBO[leftChildIndex], u_ParticleMass, ivec2(-1, -1), 1.0);
 	}
 	else {
 		leftChildIndex = biggestLeftChild + u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt;
 	}
 	if (max(i, j) == biggestLeftChild + 1) {
 		rightChildIndex = biggestLeftChild + 1;
-		treeNodesSSBO[rightChildIndex] = TreeNode_t(posInputSSBO[rightChildIndex], 30000, ivec2(-1, -1), 1.0);
+		treeNodesSSBO[rightChildIndex] = TreeNode_t(posInputSSBO[rightChildIndex], u_ParticleMass, ivec2(-1, -1), 1.0);
 	}
 	else {
 		rightChildIndex = biggestLeftChild + 1 + u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt;
 	}
 	vec4 centerMass = findCenterOfMass(i, j);
 	float boundingBox = calculateBoundingBox(i, j);
-	treeNodesSSBO[u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt + i] = TreeNode_t(centerMass, l*3000, ivec2(leftChildIndex, rightChildIndex), boundingBox);
+	treeNodesSSBO[u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt + i] = TreeNode_t(centerMass, l*u_ParticleMass, ivec2(leftChildIndex, rightChildIndex), boundingBox);
 }
