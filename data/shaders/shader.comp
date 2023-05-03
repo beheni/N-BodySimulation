@@ -19,6 +19,8 @@ layout(std430, binding = 4) buffer velOutputBuffer
     vec4 velOutputSSBO[];
 }; 
 
+
+
 uniform float deltaTime;
 uniform vec3 boundingBox;
 float G = 0.01;

@@ -39,6 +39,16 @@ private:
 	Clock m_Clock;
 	float m_Time;
 	size_t m_FrameCounter;
+
+	#pragma pack(4)
+	struct TreeNode_t 
+	{
+		glm::vec4 centerOfMass;
+		float totalMass;
+		glm::ivec2 children;
+		float boundingBoxMetric;
+	};
+
 	
 	std::unique_ptr<Menu> m_Menu;
 	std::unique_ptr<RenderProgram> m_RenderProgram;
@@ -53,4 +63,6 @@ private:
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_PositionBuffers;
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_VelocityBuffers;
 	std::unique_ptr<SSBO<unsigned int>> m_MortonCodesBuffer;
+	std::unique_ptr<SSBO<TreeNode_t>> m_TreeNodesBuffer;
+
 };

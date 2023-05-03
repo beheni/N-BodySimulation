@@ -43,6 +43,9 @@ App::App()
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
 
     m_MortonCodesBuffer = std::make_unique<SSBO<unsigned int>>(c_TextureSize * c_TextureSize);
+
+    std::vector<TreeNode_t> treeNodesSSBO(c_TextureSize* c_TextureSize);
+    m_TreeNodesBuffer = std::make_unique<SSBO<TreeNode_t>>(treeNodesSSBO.data(), treeNodesSSBO.size());
 }
 
 App::~App()
@@ -85,6 +88,7 @@ void App::DoFrame(float dt)
         m_MortonCodesComputeProgram->Use();
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
         m_MortonCodesBuffer->Bind(5);
+
         m_MortonCodesComputeProgram->SetFvec3("boundingBox", m_GeneralBoundingBox);
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -99,7 +103,9 @@ void App::DoFrame(float dt)
         m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
         m_VelocityBuffers[m_FrameCounter % 2]       ->Bind(3);
         m_VelocityBuffers[(m_FrameCounter + 1) % 2] ->Bind(4);
-       
+        m_TreeNodesBuffer->Bind(6);
+
+
         glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
