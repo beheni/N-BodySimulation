@@ -13,27 +13,27 @@ App::App()
     m_RenderProgram = std::make_unique<RenderProgram>("./data/shaders/shader.vert", "./data/shaders/shader.frag");
     m_ComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/shader.comp");
     m_MortonCodesComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/mortonCodes.comp");
+    m_BuildingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/buildingTree.comp");
     m_Texture = std::make_unique<Texture>("./data/textures/star.png");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 150.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
-    m_Mesh = std::make_unique<Mesh>(c_TextureSize * c_TextureSize, -80, 80);
+    m_Mesh = std::make_unique<Mesh>(c_NumberParticlesSqrt * c_NumberParticlesSqrt, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
     m_Menu = std::make_unique<Menu>("Menu", m_Window->Get());
 
     Menu::EmbraceTheDarkness();
     m_Menu->AddSliderFloat("Speed", &m_SimulationSpeed, 0.1f, 5.0f);
     m_Menu->AddCheckbox("Simulation", &m_RunSim);
-    m_Menu->AddCheckbox("Rotatation", &m_Rotate);
+    m_Menu->AddCheckbox("Rotation", &m_Rotate);
     m_Menu->AddButton("Enter FlyCam Mode", [this] {m_Mouse->DisableCursor(m_Window->Get()); });
     m_Menu->AddText("[press TAB - to exit]");
     m_Menu->AddText("['WASD' for control ]");
 
-    std::vector<glm::vec4> data(c_TextureSize * c_TextureSize);
+    std::vector<glm::vec4> data(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
     std::normal_distribution<float> distX(0, 10);
     std::normal_distribution<float> distY(0, 10);
     std::normal_distribution<float> distZ(0, 10);
-    auto seed = (unsigned int)(glfwGetTime() * 100.0);
-    std::default_random_engine eng(seed);
-    for (size_t i = 0; i < c_TextureSize * c_TextureSize; i++)
+    std::default_random_engine eng;
+    for (size_t i = 0; i < c_NumberParticlesSqrt * c_NumberParticlesSqrt; i++)
     {
         glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
         data[i] = glm::vec4(pos.x, pos.y, pos.z, 0.0f);
@@ -43,7 +43,10 @@ App::App()
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
 
-    m_MortonCodesBuffer = std::make_unique<SSBO<unsigned int>>(c_TextureSize * c_TextureSize);
+    m_MortonCodesBuffer = std::make_unique<SSBO<unsigned int>>(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+
+    std::vector<TreeNode_t> treeNodesSSBO(2*(c_NumberParticlesSqrt * c_NumberParticlesSqrt) - 1);
+    m_TreeNodesBuffer = std::make_unique<SSBO<TreeNode_t>>(treeNodesSSBO.data(), treeNodesSSBO.size());
 }
 
 App::~App()
@@ -82,27 +85,39 @@ void App::DoFrame(float dt)
 {
     if (m_RunSim)
     {
-        /*
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
+        m_MortonCodesComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
         m_MortonCodesBuffer->Bind(5);
-        m_MortonCodesComputeProgram->SetFvec3("boundingBox", c_GeneralBoundingBox);
-        glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
+
+        m_MortonCodesComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
+        glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-        */
+
+        m_BuildingTreeComputeProgram->Use();
+        m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
+        m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
+        m_VelocityBuffers[m_FrameCounter % 2]->Bind(3);
+        m_MortonCodesBuffer->Bind(5);
+        m_TreeNodesBuffer->Bind(6);
+        glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        
         // compute part
         m_ComputeProgram->Use();
-        m_ComputeProgram->SetFloat("deltaTime", dt * m_SimulationSpeed);
-        m_ComputeProgram->SetFvec3("boundingBox", c_GeneralBoundingBox);
+        m_ComputeProgram->SetFloat("u_DeltaTime", dt * m_SimulationSpeed);
+        m_ComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
+        m_ComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
 
         m_PositionBuffers[m_FrameCounter % 2]       ->Bind(1);
         m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
         m_VelocityBuffers[m_FrameCounter % 2]       ->Bind(3);
         m_VelocityBuffers[(m_FrameCounter + 1) % 2] ->Bind(4);
-       
-        glDispatchCompute(c_TextureSize / 8, c_TextureSize / 4, 1);
+
+        glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }

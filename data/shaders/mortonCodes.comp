@@ -1,14 +1,17 @@
 #version 430 core
 layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
 
-layout(std430, binding = 1) buffer posInputBuffer{
+layout(std430, binding = 1) buffer posInputBuffer
+{
     vec3 positionsSSBO[];
 };
 layout(std430, binding = 5) buffer mortonCodeBuffer
 {
     uint mortonCodesSSBO[];
 };
-uniform vec3 boundingBox;
+
+uniform int u_NumberOfParticlesSqrt;
+uniform vec3 u_BoundingBox;
 
 uint expandBits(uint v)
 {
@@ -16,27 +19,31 @@ uint expandBits(uint v)
     v = (v * 0x00000101u) & 0x0F00F00Fu;
     v = (v * 0x00000011u) & 0xC30C30C3u;
     v = (v * 0x00000005u) & 0x49249249u;
+
     return v;
 }
 
 uint morton3D(float x, float y, float z)
 {
-    x = (x/boundingBox.x + 1)/2;
-    y = (y/boundingBox.y + 1)/2;
-    z = (z/boundingBox.z + 1)/2;
+    x = (x/u_BoundingBox.x + 1)/2;
+    y = (y/u_BoundingBox.y + 1)/2;
+    z = (z/u_BoundingBox.z + 1)/2;
+
     x = min(max(x * 1024.0f, 0.0f), 1023.0f);
     y = min(max(y * 1024.0f, 0.0f), 1023.0f);
     z = min(max(z * 1024.0f, 0.0f), 1023.0f);
+
     uint xx = expandBits(uint(x));
     uint yy = expandBits(uint(y));
     uint zz = expandBits(uint(z));
+
     return xx * 4 + yy * 2 + zz;
 }
 
 void main()
 {
    ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
-   vec3 position = positionsSSBO[128*texelCoord.x + texelCoord.y];
+   vec3 position = positionsSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y];
    uint mortonCode = morton3D(position.x, position.y, position.z);
-   mortonCodesSSBO[128*texelCoord.x + texelCoord.y] = mortonCode;
+   mortonCodesSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y] = mortonCode;
 }

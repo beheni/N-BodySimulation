@@ -32,7 +32,7 @@ private:
 
 private:
 	const glm::vec3 c_GeneralBoundingBox = {100.0f, 100.0f, 100.0f};
-	const size_t c_TextureSize = 128;
+	const size_t c_NumberParticlesSqrt = 128;
 
 	float m_SimulationSpeed = 1.0f;
 	bool m_RunSim = false;
@@ -40,12 +40,23 @@ private:
 
 	float m_Time;
 	Clock m_Clock;
-	size_t m_FrameCounter = 0;
+	size_t m_FrameCounter;
+
+	#pragma pack(4)
+	struct TreeNode_t 
+	{
+		glm::vec4 centerOfMass;
+		float totalMass;
+		glm::ivec2 children;
+		float boundingBoxMetric;
+	};
+
 	
 	std::unique_ptr<Menu> m_Menu;
 	std::unique_ptr<RenderProgram> m_RenderProgram;
 	std::unique_ptr<ComputeProgram> m_MortonCodesComputeProgram;
 	std::unique_ptr<ComputeProgram> m_ComputeProgram;
+	std::unique_ptr<ComputeProgram> m_BuildingTreeComputeProgram;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;
 	std::unique_ptr<Mouse> m_Mouse;
@@ -55,4 +66,6 @@ private:
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_PositionBuffers;
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_VelocityBuffers;
 	std::unique_ptr<SSBO<unsigned int>> m_MortonCodesBuffer;
+	std::unique_ptr<SSBO<TreeNode_t>> m_TreeNodesBuffer;
+
 };

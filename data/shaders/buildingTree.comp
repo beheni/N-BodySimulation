@@ -1,0 +1,56 @@
+#version 430 core
+
+struct TreeNode_t 
+{
+	vec4 centerOfMass;
+	float totalMass;
+	ivec2 children;
+	float boundingBoxMetric;
+};
+
+layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
+
+layout(std430, binding = 1) buffer posInputBuffer
+{
+    vec4 posInputSSBO[];
+};
+layout(std430, binding = 3) buffer velInputBuffer
+{
+    vec4 velInputSSBO[];
+};  
+layout(std430, binding = 5) buffer mortonCodeBuffer
+{
+    uint mortonCodesSSBO[];
+};
+layout(std430, binding = 6) buffer treeNodesBuffer
+{
+    TreeNode_t treeNodesSSBO[];
+};
+
+uniform int u_NumberOfParticlesSqrt;
+
+int sharedPrefixLength(int i, int j)
+{
+	if(j < 0 || j >= u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt) return -1;
+	uint mi = mortonCodesSSBO[i];
+	uint mj = mortonCodesSSBO[j];
+
+	if(mi!=mj)
+	{
+		uint x = mi ^ mj;
+		float f = log2(float(x) + 0.5);
+		return 32 - int(f);
+	}
+	else
+	{
+		int x = i ^ j;
+		float f = log2(float(x) + 0.5);
+		return 64 - int(f);
+	}
+}
+
+void main()
+{
+	float k = 1.0;
+	k = k + u_NumberOfParticlesSqrt; 
+}
