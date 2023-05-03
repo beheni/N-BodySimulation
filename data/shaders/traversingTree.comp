@@ -1,0 +1,110 @@
+#version 430 core
+layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
+
+struct TreeNode_t 
+{
+	vec4 centerOfMass;
+	float totalMass;
+	ivec2 children;
+	float boundingBoxMetric;
+};
+
+layout(std430, binding = 1) buffer posInputBuffer
+{
+    vec4 positionInputSSBO[];
+};      
+
+layout(std430, binding = 2) buffer posOutputBuffer
+{
+    vec4 positionOutputSSBO[];
+}; 
+
+layout(std430, binding = 3) buffer velInputBuffer
+{
+    vec4 velInputSSBO[];
+}; 
+
+layout(std430, binding = 4) buffer velOutputBuffer
+{
+    vec4 velOutputSSBO[];
+};
+
+layout(std430, binding = 6) buffer treeNodesBuffer
+{
+    TreeNode_t treeNodesSSBO[];
+};
+
+uniform float deltaTime;
+uniform vec3 boundingBox;
+float G = 0.01;
+
+bool considerSingleBody(vec4 curNodePosition, vec4 centerOfMass, float boundingBoxMetric)
+{
+    float threshold = 0.5;
+    float dist = sqrt(pow(curNodePosition.x - centerOfMass.x, 2) + pow(curNodePosition.y - centerOfMass.y, 2) + pow(curNodePosition.z - centerOfMass.z, 2));
+    if (boundingBoxMetric / dist < threshold)
+        return true;
+    return false;
+};
+
+void main()
+{
+    ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+    // i - index of leaf node (proceed in this invocation) in the treeNodesSSBO,
+    // and also in all input and output buffers with positions and velocities
+	int i = 128 * texelCoord.x + texelCoord.y;
+    vec4 position = positionInputSSBO[i];
+    vec4 velocity = velInputSSBO[i];
+
+    // allocate traversal stack and push NULL
+    TreeNode_t stack[64];
+    int stackPos = -1;
+
+    #define pop() stack[stackPos--]
+    #define push(data)  stack[++stackPos] = data
+
+    TreeNode_t NullNode = TreeNode_t(vec4(0.0, 0.0, 0.0, 0.0), 0.0, ivec2(0, 0), 0.0);
+    push(NullNode);
+    
+    vec4 f = vec4(0, 0, 0, 0);
+
+    // traverse nodes starting from the root
+    TreeNode_t curNode = treeNodesSSBO[128*128];
+    do
+    {
+        // if current node is a leaf - just calculate force
+        // otherwise (internal node) - compare with threshold
+        if (curNode.children == ivec2(-1, -1) || 
+            considerSingleBody(positionInputSSBO[i], curNode.centerOfMass, curNode.boundingBoxMetric))
+        {
+            vec4 pathVec = curNode.centerOfMass - position;
+            float dist = length(pathVec) + 1;
+            float invDistCub = 1.0 / (dist * dist * dist);
+
+            pathVec = pathVec * invDistCub;
+            f = f + pathVec;
+        } else {
+            // proceed with traversal and add child nodes to the stack
+            push(treeNodesSSBO[curNode.children.x]);
+            push(treeNodesSSBO[curNode.children.y]);
+        }
+        curNode = pop();
+    }
+    while (curNode != NullNode);
+
+    f = f * G;
+    velocity = velocity + f;
+    position = position + velocity * deltaTime;  
+
+    if(abs(position.x) > boundingBox.x || 
+       abs(position.y) > boundingBox.y ||
+       abs(position.z) > boundingBox.z)
+    {
+        //position = vec4(0, 0, 0, 0);
+        velocity = velocity * vec4(-1,-1,-1,-1);
+        position = position + velocity * deltaTime;  
+    }
+
+    velOutputSSBO[128 * texelCoord.x + texelCoord.y] = velocity;
+    positionOutputSSBO[128 * texelCoord.x + texelCoord.y] = position;
+}
