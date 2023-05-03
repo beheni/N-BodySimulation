@@ -34,24 +34,24 @@ float calculateBoundingBox(int i, int j)
 	int left = min(i, j);
 	int right = max(i, j);
 
-	float maximumX = posInputBuffer[left].x;
-	float minimumX = posInputBuffer[left].x;
-	float maximumY = posInputBuffer[left].y;
-	float minimumY = posInputBuffer[left].y;
-	float maximumZ = posInputBuffer[left].z;
-	float minimumZ = posInputBuffer[left].z;
+	float maximumX = posInputSSBO[left].x;
+	float minimumX = posInputSSBO[left].x;
+	float maximumY = posInputSSBO[left].y;
+	float minimumY = posInputSSBO[left].y;
+	float maximumZ = posInputSSBO[left].z;
+	float minimumZ = posInputSSBO[left].z;
 	
 	while (left < right) 
 	{
-		maximumX = max(maximumX, posInputBuffer[left + 1].x);
-		minimumX = min(minimumX, posInputBuffer[left + 1].x);
-		maximumY = max(maximumY, posInputBuffer[left + 1].y);
-		minimumY = min(minimumY, posInputBuffer[left + 1].y);
-		maximumZ = max(maximumZ, posInputBuffer[left + 1].z);
-		minimumZ = min(minimumZ, posInputBuffer[left + 1].z);
+		maximumX = max(maximumX, posInputSSBO[left + 1].x);
+		minimumX = min(minimumX, posInputSSBO[left + 1].x);
+		maximumY = max(maximumY, posInputSSBO[left + 1].y);
+		minimumY = min(minimumY, posInputSSBO[left + 1].y);
+		maximumZ = max(maximumZ, posInputSSBO[left + 1].z);
+		minimumZ = min(minimumZ, posInputSSBO[left + 1].z);
 		++left;
 	}
-	return max(maximumX - minimumX, maximumY - minimumY, maximumZ - minimumZ);
+	return max(max(maximumX - minimumX, maximumY - minimumY), maximumZ - minimumZ);
 }
 
 vec4 findCenterOfMass(int i, int j)
