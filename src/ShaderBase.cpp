@@ -13,7 +13,7 @@ void ShaderBase::SetInt(const char* name, int value)
 {
 	glUniform1i(FindUniformLocation(name), value);
 }
-
+//todo SetUint
 void ShaderBase::SetFloat(const char* name, float value)
 {
 	glUniform1f(FindUniformLocation(name), value);

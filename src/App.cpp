@@ -98,6 +98,7 @@ void App::DoFrame(float dt)
 
         m_BuildingTreeComputeProgram->Use();
         m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
+        m_BuildingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
         m_MortonCodesBuffer->Bind(5);
         m_TreeNodesBuffer->Bind(6);
