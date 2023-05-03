@@ -56,6 +56,7 @@ private:
 	std::unique_ptr<RenderProgram> m_RenderProgram;
 	std::unique_ptr<ComputeProgram> m_MortonCodesComputeProgram;
 	std::unique_ptr<ComputeProgram> m_BuildingTreeComputeProgram;
+	std::unique_ptr<ComputeProgram> m_TraversingTreeComputeProgram;
 	std::unique_ptr<ComputeProgram> m_ComputeProgram;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;

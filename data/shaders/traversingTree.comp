@@ -34,8 +34,10 @@ layout(std430, binding = 6) buffer treeNodesBuffer
     TreeNode_t treeNodesSSBO[];
 };
 
-uniform float deltaTime;
-uniform vec3 boundingBox;
+uniform float u_DeltaTime;
+uniform int u_NumberOfParticlesSqrt;
+uniform vec3 u_BoundingBox;
+
 float G = 0.01;
 
 bool considerSingleBody(vec4 curNodePosition, vec4 centerOfMass, float boundingBoxMetric)
@@ -52,7 +54,7 @@ void main()
     ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
     // i - index of leaf node (proceed in this invocation) in the treeNodesSSBO,
     // and also in all input and output buffers with positions and velocities
-	int i = 128 * texelCoord.x + texelCoord.y;
+	int i = u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y;
     vec4 position = positionInputSSBO[i];
     vec4 velocity = velInputSSBO[i];
 
@@ -69,7 +71,7 @@ void main()
     vec4 f = vec4(0, 0, 0, 0);
 
     // traverse nodes starting from the root
-    TreeNode_t curNode = treeNodesSSBO[128*128];
+    TreeNode_t curNode = treeNodesSSBO[u_NumberOfParticlesSqrt*u_NumberOfParticlesSqrt];
     do
     {
         // if current node is a leaf - just calculate force
@@ -94,17 +96,17 @@ void main()
 
     f = f * G;
     velocity = velocity + f;
-    position = position + velocity * deltaTime;  
+    position = position + velocity * u_DeltaTime;  
 
-    if(abs(position.x) > boundingBox.x || 
-       abs(position.y) > boundingBox.y ||
-       abs(position.z) > boundingBox.z)
+    if(abs(position.x) > u_BoundingBox.x || 
+       abs(position.y) > u_BoundingBox.y ||
+       abs(position.z) > u_BoundingBox.z)
     {
         //position = vec4(0, 0, 0, 0);
         velocity = velocity * vec4(-1,-1,-1,-1);
-        position = position + velocity * deltaTime;  
+        position = position + velocity * u_DeltaTime;  
     }
 
-    velOutputSSBO[128 * texelCoord.x + texelCoord.y] = velocity;
-    positionOutputSSBO[128 * texelCoord.x + texelCoord.y] = position;
+    velOutputSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y] = velocity;
+    positionOutputSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y] = position;
 }

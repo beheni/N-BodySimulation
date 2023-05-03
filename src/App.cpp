@@ -14,6 +14,7 @@ App::App()
     m_ComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/shader.comp");
     m_MortonCodesComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/mortonCodes.comp");
     m_BuildingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/buildingTree.comp");
+    m_TraversingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/traversingTree.comp");
     m_Texture = std::make_unique<Texture>("./data/textures/star.png");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 150.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
     m_Mesh = std::make_unique<Mesh>(c_NumberParticlesSqrt * c_NumberParticlesSqrt, -80, 80);
@@ -90,12 +91,12 @@ void App::DoFrame(float dt)
         m_MortonCodesComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
         m_MortonCodesBuffer->Bind(5);
-
         m_MortonCodesComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
         glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
+        // building tree compute part
         m_BuildingTreeComputeProgram->Use();
         m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
@@ -105,21 +106,37 @@ void App::DoFrame(float dt)
         glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-        
-        // compute part
-        m_ComputeProgram->Use();
-        m_ComputeProgram->SetFloat("u_DeltaTime", dt * m_SimulationSpeed);
-        m_ComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
-        m_ComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
+
+        // traversing tree compute part
+        m_TraversingTreeComputeProgram->Use();
+        m_TraversingTreeComputeProgram->SetFloat("u_DeltaTime", dt * m_SimulationSpeed);
+        m_TraversingTreeComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
+        m_TraversingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
 
         m_PositionBuffers[m_FrameCounter % 2]       ->Bind(1);
         m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
         m_VelocityBuffers[m_FrameCounter % 2]       ->Bind(3);
         m_VelocityBuffers[(m_FrameCounter + 1) % 2] ->Bind(4);
+        m_TreeNodesBuffer->Bind(6);
 
         glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        
+        // compute part
+        //m_ComputeProgram->Use();
+        //m_ComputeProgram->SetFloat("u_DeltaTime", dt * m_SimulationSpeed);
+        //m_ComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
+        //m_ComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
+
+        //m_PositionBuffers[m_FrameCounter % 2]       ->Bind(1);
+        //m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
+        //m_VelocityBuffers[m_FrameCounter % 2]       ->Bind(3);
+        //m_VelocityBuffers[(m_FrameCounter + 1) % 2] ->Bind(4);
+
+        //glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
+        //glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        //glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 
     // render part
