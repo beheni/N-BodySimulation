@@ -60,7 +60,7 @@ void main()
     vec4 velocity = velInputSSBO[i];
 
     // allocate traversal stack and push NULL
-    TreeNode_t stack[64];
+    TreeNode_t stack[32];
     int stackPos = -1;
 
     #define pop() stack[stackPos--]
@@ -73,7 +73,7 @@ void main()
 
     // traverse nodes starting from the root
     TreeNode_t curNode = treeNodesSSBO[u_NumberOfParticlesSqrt*u_NumberOfParticlesSqrt];
-    do
+    for(int i = 0; i < 2 * u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt; ++i)
     {
         // if current node is a leaf - just calculate force
         // otherwise (internal node) - compare with threshold
@@ -92,8 +92,10 @@ void main()
             push(treeNodesSSBO[curNode.children.y]);
         }
         curNode = pop();
+
+        if (curNode == NullNode)
+            break;
     }
-    while (curNode != NullNode);
 
     f = f * G * u_ParticleMass;
     velocity = velocity + f;
