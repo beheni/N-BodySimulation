@@ -29,6 +29,31 @@ layout(std430, binding = 6) buffer treeNodesBuffer
 
 uniform int u_NumberOfParticlesSqrt;
 
+float calculateBoundingBox(int i, int j)
+{
+	int left = min(i, j);
+	int right = max(i, j);
+
+	float maximumX = posInputBuffer[left].x;
+	float minimumX = posInputBuffer[left].x;
+	float maximumY = posInputBuffer[left].y;
+	float minimumY = posInputBuffer[left].y;
+	float maximumZ = posInputBuffer[left].z;
+	float minimumZ = posInputBuffer[left].z;
+	
+	while (left < right) 
+	{
+		maximumX = max(maximumX, posInputBuffer[left + 1].x);
+		minimumX = min(minimumX, posInputBuffer[left + 1].x);
+		maximumY = max(maximumY, posInputBuffer[left + 1].y);
+		minimumY = min(minimumY, posInputBuffer[left + 1].y);
+		maximumZ = max(maximumZ, posInputBuffer[left + 1].z);
+		minimumZ = min(minimumZ, posInputBuffer[left + 1].z);
+		++left;
+	}
+	return max(maximumX - minimumX, maximumY - minimumY, maximumZ - minimumZ);
+}
+
 vec4 findCenterOfMass(int i, int j)
 {
 	vec4 centerOfMass = vec4(0, 0, 0, 0);
@@ -121,5 +146,6 @@ void main()
 		rightChildIndex = biggestLeftChild + 1 + u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt;
 	}
 	vec4 centerMass = findCenterOfMass(i, j);
-	treeNodesSSBO[u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt + i] = TreeNode_t(centerMass, l*3000, ivec2(leftChildIndex, rightChildIndex), 1.0);
+	float boundingBox = calculateBoundingBox(i, j);
+	treeNodesSSBO[u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt + i] = TreeNode_t(centerMass, l*3000, ivec2(leftChildIndex, rightChildIndex), boundingBox);
 }
