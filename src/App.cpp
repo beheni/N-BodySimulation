@@ -99,7 +99,6 @@ void App::DoFrame(float dt)
         m_BuildingTreeComputeProgram->Use();
         m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-        m_VelocityBuffers[m_FrameCounter % 2]->Bind(3);
         m_MortonCodesBuffer->Bind(5);
         m_TreeNodesBuffer->Bind(6);
         glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
