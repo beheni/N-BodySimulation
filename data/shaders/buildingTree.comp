@@ -90,9 +90,9 @@ void main()
 {
 	ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
 	int i = u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y;
-	if (i >= u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt - 1) {
-		return;
-	}
+	//if (i >= u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt - 1) {
+		//return;
+	//}
 	int direction = sign(sharedPrefixLength(i, i + 1) - sharedPrefixLength(i, i - 1));
 
 	int minPrefixLength =  sharedPrefixLength(i, i - direction);
