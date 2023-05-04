@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BitonicSort.cpp" />
     <ClCompile Include="external\include\glad\glad.c" />
     <ClCompile Include="external\include\glm\detail\glm.cpp" />
     <ClCompile Include="external\include\imgui\imgui.cpp" />
@@ -39,6 +40,7 @@
     <ClCompile Include="src\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\BitonicSort.h" />
     <ClInclude Include="external\include\glad\glad.h" />
     <ClInclude Include="external\include\GLFW\glfw3.h" />
     <ClInclude Include="external\include\GLFW\glfw3native.h" />
@@ -376,6 +378,7 @@
     <None Include="data\shaders\shader.comp" />
     <None Include="data\shaders\shader.frag" />
     <None Include="data\shaders\shader.vert" />
+    <None Include="data\shaders\simpleBitonicSort.glsl" />
     <None Include="external\include\glm\detail\func_common.inl" />
     <None Include="external\include\glm\detail\func_common_simd.inl" />
     <None Include="external\include\glm\detail\func_exponential.inl" />

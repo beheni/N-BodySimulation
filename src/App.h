@@ -7,6 +7,7 @@
 
 #include "RenderProgram.h"
 #include "ComputeProgram.h"
+#include "BitonicSort.h"
 #include "Exception.h"
 #include "Window.h"
 #include "Camera.h"
@@ -59,6 +60,7 @@ private:
 	std::unique_ptr<ComputeProgram> m_BuildingTreeComputeProgram;
 	std::unique_ptr<ComputeProgram> m_TraversingTreeComputeProgram;
 	std::unique_ptr<ComputeProgram> m_ComputeProgram;
+	std::unique_ptr<BitonicSort> m_SortingProgram;
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<Camera> m_Camera;
 	std::unique_ptr<Mouse> m_Mouse;
@@ -68,6 +70,7 @@ private:
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_PositionBuffers;
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_VelocityBuffers;
 	std::unique_ptr<SSBO<unsigned int>> m_MortonCodesBuffer;
+	std::unique_ptr<SSBO<unsigned int>> m_ParticleIds;
 	std::unique_ptr<SSBO<TreeNode_t>> m_TreeNodesBuffer;
 
 };

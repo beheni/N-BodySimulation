@@ -25,8 +25,8 @@ Window::Window(int width, int height, const char* title, bool fullscreen)
         throw EXCEPTION("Failed to create window");
         glfwTerminate();
     }
-
     glfwMakeContextCurrent(m_Window);
+    glfwSwapInterval(0);
     glfwSetFramebufferSizeCallback(m_Window, Window::FramebufferSizeCallBack);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {

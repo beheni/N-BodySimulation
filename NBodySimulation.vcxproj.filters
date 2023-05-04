@@ -90,6 +90,7 @@
     <ClCompile Include="src\Menu.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\BitonicSort.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\include\glm\detail\_features.hpp">
@@ -1086,6 +1087,7 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="src\SSBO.h" />
+    <ClInclude Include="src\BitonicSort.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="external\include\glm\gtc\bitfield.inl">
@@ -1499,5 +1501,6 @@
     <None Include="data\shaders\shader.comp" />
     <None Include="data\shaders\shader.frag" />
     <None Include="data\shaders\shader.vert" />
+    <None Include="data\shaders\simpleBitonicSort.glsl" />
   </ItemGroup>
 </Project>

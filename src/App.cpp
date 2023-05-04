@@ -1,6 +1,7 @@
 #include "App.h"
 #include <random>
 
+
 App::App()
 {
     glfwInit();
@@ -9,12 +10,14 @@ App::App()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
+
     m_Window = std::make_unique<Window>(1280, 720, "N-Body Simulation");
     m_RenderProgram = std::make_unique<RenderProgram>("./data/shaders/shader.vert", "./data/shaders/shader.frag");
     m_ComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/shader.comp");
     m_MortonCodesComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/mortonCodes.comp");
     m_BuildingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/buildingTree.comp");
     m_TraversingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/traversingTree.comp");
+    m_SortingProgram = std::make_unique<BitonicSort>("./data/shaders/bitonicSort.comp");
     m_Texture = std::make_unique<Texture>("./data/textures/star.png");
     m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 150.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
     m_Mesh = std::make_unique<Mesh>(c_NumberParticlesSqrt * c_NumberParticlesSqrt, -80, 80);
@@ -30,10 +33,17 @@ App::App()
     m_Menu->AddText("['WASD' for control ]");
 
     std::vector<glm::vec4> data(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+#if 1
     std::normal_distribution<float> distX(0, 10);
     std::normal_distribution<float> distY(0, 10);
     std::normal_distribution<float> distZ(0, 10);
-    std::default_random_engine eng;
+    std::default_random_engine eng(3);
+#else
+    std::uniform_real_distribution<float> distX(-10, 10);
+    std::uniform_real_distribution<float> distY(-10, 10);
+    std::uniform_real_distribution<float> distZ(-10, 10);
+    std::default_random_engine eng(4);
+#endif
     for (size_t i = 0; i < c_NumberParticlesSqrt * c_NumberParticlesSqrt; i++)
     {
         glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
@@ -45,6 +55,8 @@ App::App()
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
 
     m_MortonCodesBuffer = std::make_unique<SSBO<unsigned int>>(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+
+    m_ParticleIds       = std::make_unique<SSBO<unsigned int>>(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
 
     std::vector<TreeNode_t> treeNodesSSBO(2*(c_NumberParticlesSqrt * c_NumberParticlesSqrt) - 1);
     m_TreeNodesBuffer = std::make_unique<SSBO<TreeNode_t>>(treeNodesSSBO.data(), treeNodesSSBO.size());
@@ -95,6 +107,10 @@ void App::DoFrame(float dt)
         glDispatchCompute(c_NumberParticlesSqrt / 8, c_NumberParticlesSqrt / 4, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+
+        // sorting morton codes
+        //m_SortingProgram->Sort(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
 
         // building tree compute part
         m_BuildingTreeComputeProgram->Use();
