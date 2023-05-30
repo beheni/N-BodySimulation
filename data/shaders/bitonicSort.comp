@@ -33,15 +33,24 @@ uniform uint u_Algorithm;
 
 void CompareAndSwap(ivec2 id)
 {
-	if (true)
-	{
-		memoryBarrier();
-		mortonCodesOutputSSBO[id.x] = mortonCodesInputSSBO[id.y];
-		mortonCodesOutputSSBO[id.y] = mortonCodesInputSSBO[id.x];
+	uint leftMorton = mortonCodesInputSSBO[id.x];
+	uint rightMorton = mortonCodesInputSSBO[id.y];
 
-		memoryBarrier();
-		particleIdOutputSSBO[id.x] = particleIdInputSSBO[id.y];
-		particleIdOutputSSBO[id.y] = particleIdInputSSBO[id.x];
+	if (leftMorton > rightMorton)
+	{
+		mortonCodesOutputSSBO[id.x] = rightMorton;
+		mortonCodesOutputSSBO[id.y] = leftMorton;
+
+		//particleIdOutputSSBO[id.x] = particleIdInputSSBO[id.y];
+		//particleIdOutputSSBO[id.y] = particleIdInputSSBO[id.x];
+	}
+	else
+	{
+		mortonCodesOutputSSBO[id.x] = leftMorton;
+		mortonCodesOutputSSBO[id.y] = rightMorton;
+
+		//particleIdOutputSSBO[id.x] = particleIdInputSSBO[id.x];
+		//particleIdOutputSSBO[id.y] = particleIdInputSSBO[id.y];
 	}
 }
 

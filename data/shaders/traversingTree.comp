@@ -57,8 +57,7 @@ bool considerSingleBody(vec4 curNodePosition, vec4 centerOfMass, float boundingB
 
 void main()
 {
-    uint invocationId = gl_GlobalInvocationID.x;
-    uint id = particleIdSSBO[invocationId];
+    uint id = particleIdSSBO[gl_GlobalInvocationID.x];
     // i - index of leaf node (proceed in this invocation) in the treeNodesSSBO,
     // and also in all input and output buffers with positions and velocities
     vec4 position = positionInputSSBO[id];
@@ -84,7 +83,7 @@ void main()
         // otherwise (internal node) - compare with threshold
         if (curNode.children == ivec2(-1, -1) || 
             considerSingleBody(
-                positionInputSSBO[particleIdSSBO[i]]/* TODO-FIX: out-of-bounds indexing*/, 
+                positionInputSSBO[particleIdSSBO[i]], 
                 curNode.centerOfMass, 
                 curNode.boundingBoxMetric
                 )

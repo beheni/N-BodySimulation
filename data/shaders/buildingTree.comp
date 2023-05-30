@@ -18,11 +18,11 @@ layout(std430, binding = 2) buffer particleIdBuffer
 {
     uint particleIdSSBO[];
 };
-layout(std430, binding = 5) buffer mortonCodeBuffer
+layout(std430, binding = 3) buffer mortonCodeBuffer
 {
     uint mortonCodesSSBO[];
 };
-layout(std430, binding = 6) buffer treeNodesBuffer
+layout(std430, binding = 4) buffer treeNodesBuffer
 {
     TreeNode_t treeNodesSSBO[];
 };

@@ -9,12 +9,13 @@ layout(std430, binding = 2) buffer particleIdBuffer
 {
     uint particleIdSSBO[];
 };
-layout(std430, binding = 5) buffer mortonCodeBuffer
+layout(std430, binding = 3) buffer mortonCodeBuffer
 {
     uint mortonCodesSSBO[];
 };
 
 uniform vec3 u_BoundingBox;
+uniform int u_NumberOfParticlesSqrt;
 
 uint expandBits(uint v)
 {

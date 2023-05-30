@@ -55,10 +55,10 @@ App::App()
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
     m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
 
-    m_MortonCodesBuffer.push_back(std::make_unique<SSBO<unsigned int>>(c_NumberParticlesSqrt * c_NumberParticlesSqrt));
-    m_MortonCodesBuffer.push_back(std::make_unique<SSBO<unsigned int>>(c_NumberParticlesSqrt * c_NumberParticlesSqrt));
-    m_ParticleIds.push_back(std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt));
-    m_ParticleIds.push_back(std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt));
+    m_MortonCodesBuffers.emplace_back(std::make_unique<SSBO<unsigned int>>( c_NumberParticlesSqrt * c_NumberParticlesSqrt));
+    m_MortonCodesBuffers.emplace_back(std::make_unique<SSBO<unsigned int>>(c_NumberParticlesSqrt * c_NumberParticlesSqrt));
+    m_ParticleIds.emplace_back(std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt));
+    m_ParticleIds.emplace_back(std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt));
 
     std::vector<TreeNode_t> treeNodesSSBO(2 * (c_NumberParticlesSqrt * c_NumberParticlesSqrt) - 1);
     m_TreeNodesBuffer = std::make_unique<SSBO<TreeNode_t>>(treeNodesSSBO.data(), treeNodesSSBO.size());
@@ -103,32 +103,33 @@ void App::DoFrame(float dt)
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-        m_ParticleIds[(m_FrameCounter + 1) % 2]->Bind(2);
-        m_MortonCodesBuffer[(m_FrameCounter + 1) % 2]->Bind(3);
+        m_ParticleIds[0]->Bind(2);
+        m_MortonCodesBuffers[0]->Bind(3);
+        m_MortonCodesBuffers[1]->Bind(4);
         m_MortonCodesComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
         glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
+        
         // sorting morton codes
-        //m_SortingProgram->Use();
-       // m_MortonCodesBuffer[m_FrameCounter % 2]->Bind(1); // read
-        //m_MortonCodesBuffer[(m_FrameCounter+1) % 2]->Bind(2); // write
-       // m_ParticleIds[m_FrameCounter % 2]->Bind(3); // read
-       // m_ParticleIds[(m_FrameCounter+1) % 2]->Bind(4); // write
-        //m_SortingProgram->Sort();
+        m_SortingProgram->Use();
+        m_MortonCodesBuffers[0]->Bind(1); // read
+        m_MortonCodesBuffers[1]->Bind(2); // write
+        m_ParticleIds[0]->Bind(3); // read
+        m_ParticleIds[1]->Bind(4); // write
+        m_SortingProgram->Sort();
+        
 
         // building tree compute part
         m_BuildingTreeComputeProgram->Use();
         m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_BuildingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-        m_ParticleIds[(m_FrameCounter + 1) % 2]->Bind(2);
-        m_MortonCodesBuffer[(m_FrameCounter + 1) % 2]->Bind(5);
-        m_TreeNodesBuffer->Bind(6);
+        m_ParticleIds[1]->Bind(2);
+        m_MortonCodesBuffers[1]->Bind(3);
+        m_TreeNodesBuffer->Bind(4);
         glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
         // traversing tree compute part
         m_TraversingTreeComputeProgram->Use();
@@ -136,15 +137,14 @@ void App::DoFrame(float dt)
         m_TraversingTreeComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
         m_TraversingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_TraversingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
-        m_PositionBuffers[m_FrameCounter % 2]       ->Bind(1);
-        m_PositionBuffers[(m_FrameCounter + 1) % 2] ->Bind(2);
-        m_VelocityBuffers[m_FrameCounter % 2]       ->Bind(3);
-        m_VelocityBuffers[(m_FrameCounter + 1) % 2] ->Bind(4);
-        m_ParticleIds[(m_FrameCounter + 1) % 2]->Bind(5);
+        m_PositionBuffers[m_FrameCounter        % 2]->Bind(1); // read
+        m_PositionBuffers[(m_FrameCounter + 1)  % 2]->Bind(2); // write
+        m_VelocityBuffers[m_FrameCounter        % 2]->Bind(3); // read
+        m_VelocityBuffers[(m_FrameCounter + 1)  % 2]->Bind(4); // write
+        m_ParticleIds[1]->Bind(5);
         m_TreeNodesBuffer->Bind(6);
         glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 
     // render part
