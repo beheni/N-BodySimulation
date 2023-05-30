@@ -1,5 +1,4 @@
 #version 430 core
-layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
 
 struct TreeNode_t 
 {
@@ -9,42 +8,48 @@ struct TreeNode_t
 	float boundingBoxMetric;
 };
 
+layout (local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
+
 layout(std430, binding = 1) buffer posInputBuffer
 {
     vec4 positionInputSSBO[];
 };      
-
 layout(std430, binding = 2) buffer posOutputBuffer
 {
     vec4 positionOutputSSBO[];
 }; 
-
 layout(std430, binding = 3) buffer velInputBuffer
 {
     vec4 velInputSSBO[];
 }; 
-
 layout(std430, binding = 4) buffer velOutputBuffer
 {
     vec4 velOutputSSBO[];
 };
-
+layout(std430, binding = 5) buffer particleIdBuffer
+{
+    uint particleIdSSBO[];
+};
 layout(std430, binding = 6) buffer treeNodesBuffer
 {
     TreeNode_t treeNodesSSBO[];
 };
 
-uniform float u_DeltaTime;
-uniform int u_NumberOfParticlesSqrt;
-uniform vec3 u_BoundingBox;
-uniform int u_ParticleMass;
+uniform float   u_DeltaTime;
+uniform vec3    u_BoundingBox;
+uniform int     u_ParticleMass;
+uniform int     u_NumberOfParticlesSqrt;
 
 float G = 6.6743 * pow(10, -11);
 
 bool considerSingleBody(vec4 curNodePosition, vec4 centerOfMass, float boundingBoxMetric)
 {
     float threshold = 0.5;
-    float dist = sqrt(pow(curNodePosition.x - centerOfMass.x, 2) + pow(curNodePosition.y - centerOfMass.y, 2) + pow(curNodePosition.z - centerOfMass.z, 2));
+    float dist = sqrt(
+        pow(curNodePosition.x - centerOfMass.x, 2) + 
+        pow(curNodePosition.y - centerOfMass.y, 2) + 
+        pow(curNodePosition.z - centerOfMass.z, 2));
+
     if (boundingBoxMetric / dist < threshold)
         return true;
     return false;
@@ -52,12 +57,12 @@ bool considerSingleBody(vec4 curNodePosition, vec4 centerOfMass, float boundingB
 
 void main()
 {
-    ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+    uint invocationId = gl_GlobalInvocationID.x;
+    uint id = particleIdSSBO[invocationId];
     // i - index of leaf node (proceed in this invocation) in the treeNodesSSBO,
     // and also in all input and output buffers with positions and velocities
-	int i = u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y;
-    vec4 position = positionInputSSBO[i];
-    vec4 velocity = velInputSSBO[i];
+    vec4 position = positionInputSSBO[id];
+    vec4 velocity = velInputSSBO[id];
 
     // allocate traversal stack and push NULL
     TreeNode_t stack[32];
@@ -73,13 +78,19 @@ void main()
 
     // traverse nodes starting from the root
     TreeNode_t curNode = treeNodesSSBO[u_NumberOfParticlesSqrt*u_NumberOfParticlesSqrt];
-    for(int i = 0; i < 2 * u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt; ++i)
+    for(int i = 0; i < u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt; ++i)
     {
         // if current node is a leaf - just calculate force
         // otherwise (internal node) - compare with threshold
         if (curNode.children == ivec2(-1, -1) || 
-            considerSingleBody(positionInputSSBO[i], curNode.centerOfMass, curNode.boundingBoxMetric))
+            considerSingleBody(
+                positionInputSSBO[particleIdSSBO[i]]/* TODO-FIX: out-of-bounds indexing*/, 
+                curNode.centerOfMass, 
+                curNode.boundingBoxMetric
+                )
+            )
         {
+        // TODO-FIX: veeeery crappy physics calculations
             vec4 pathVec = curNode.centerOfMass - position;
             float dist = length(pathVec) + 1;
             float invDistCub = 1.0 / (dist * dist * dist);
@@ -110,6 +121,6 @@ void main()
         position = position + velocity * u_DeltaTime;  
     }
 
-    velOutputSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y] = velocity;
-    positionOutputSSBO[u_NumberOfParticlesSqrt * texelCoord.x + texelCoord.y] = position;
+    velOutputSSBO[id]       = velocity;
+    positionOutputSSBO[id]  = position;
 }

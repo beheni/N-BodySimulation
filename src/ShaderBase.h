@@ -20,7 +20,6 @@ public:
 	void SetFvec3(const char* name, const glm::vec3& value);
 
 protected:
-
 	GLint FindUniformLocation(const char* name);
 	void CheckCompilation(GLuint shaderId) const;
 	void CheckLinking(GLuint programId) const;

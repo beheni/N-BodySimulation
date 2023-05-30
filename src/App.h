@@ -33,7 +33,7 @@ private:
 
 private:
 	const glm::vec3 c_GeneralBoundingBox = {100.0f, 100.0f, 100.0f};
-	const size_t c_NumberParticlesSqrt = 128;
+	const size_t c_NumberParticlesSqrt = 64;
 	const size_t c_ParticleMass = 30000;
 
 	float m_SimulationSpeed = 1.0f;
@@ -69,8 +69,7 @@ private:
 
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_PositionBuffers;
 	std::vector<std::unique_ptr<SSBO<glm::vec4>>> m_VelocityBuffers;
-	std::unique_ptr<SSBO<unsigned int>> m_MortonCodesBuffer;
-	std::unique_ptr<SSBO<unsigned int>> m_ParticleIds;
+	std::vector<std::unique_ptr<SSBO<unsigned int>>> m_MortonCodesBuffer;
+	std::vector<std::unique_ptr<SSBO<unsigned int>>> m_ParticleIds;
 	std::unique_ptr<SSBO<TreeNode_t>> m_TreeNodesBuffer;
-
 };

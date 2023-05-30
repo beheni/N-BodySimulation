@@ -1501,6 +1501,9 @@
     <None Include="data\shaders\shader.comp" />
     <None Include="data\shaders\shader.frag" />
     <None Include="data\shaders\shader.vert" />
-    <None Include="data\shaders\simpleBitonicSort.glsl" />
+    <None Include="data\shaders\bitonicSort.comp" />
+    <None Include="data\shaders\buildingTree.comp" />
+    <None Include="data\shaders\mortonCodes.comp" />
+    <None Include="data\shaders\traversingTree.comp" />
   </ItemGroup>
 </Project>

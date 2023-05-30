@@ -375,10 +375,13 @@
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\shaders\bitonicSort.comp" />
+    <None Include="data\shaders\buildingTree.comp" />
+    <None Include="data\shaders\mortonCodes.comp" />
     <None Include="data\shaders\shader.comp" />
     <None Include="data\shaders\shader.frag" />
     <None Include="data\shaders\shader.vert" />
-    <None Include="data\shaders\simpleBitonicSort.glsl" />
+    <None Include="data\shaders\traversingTree.comp" />
     <None Include="external\include\glm\detail\func_common.inl" />
     <None Include="external\include\glm\detail\func_common_simd.inl" />
     <None Include="external\include\glm\detail\func_exponential.inl" />

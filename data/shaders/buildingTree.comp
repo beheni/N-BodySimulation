@@ -14,6 +14,10 @@ layout(std430, binding = 1) buffer posInputBuffer
 {
     vec4 posInputSSBO[];
 }; 
+layout(std430, binding = 2) buffer particleIdBuffer
+{
+    uint particleIdSSBO[];
+};
 layout(std430, binding = 5) buffer mortonCodeBuffer
 {
     uint mortonCodesSSBO[];
@@ -31,23 +35,26 @@ float calculateBoundingBox(int i, int j)
 	int left = min(i, j);
 	int right = max(i, j);
 
-	float maximumX = posInputSSBO[left].x;
-	float minimumX = posInputSSBO[left].x;
-	float maximumY = posInputSSBO[left].y;
-	float minimumY = posInputSSBO[left].y;
-	float maximumZ = posInputSSBO[left].z;
-	float minimumZ = posInputSSBO[left].z;
+	uint firstId =  particleIdSSBO[left];
+
+	float maximumX = posInputSSBO[firstId].x;
+	float minimumX = posInputSSBO[firstId].x;
+	float maximumY = posInputSSBO[firstId].y;
+	float minimumY = posInputSSBO[firstId].y;
+	float maximumZ = posInputSSBO[firstId].z;
+	float minimumZ = posInputSSBO[firstId].z;
 	
-	while (left < right) 
+	for (int i = left + 1; left <= right; ++left)
 	{
-		maximumX = max(maximumX, posInputSSBO[left + 1].x);
-		minimumX = min(minimumX, posInputSSBO[left + 1].x);
-		maximumY = max(maximumY, posInputSSBO[left + 1].y);
-		minimumY = min(minimumY, posInputSSBO[left + 1].y);
-		maximumZ = max(maximumZ, posInputSSBO[left + 1].z);
-		minimumZ = min(minimumZ, posInputSSBO[left + 1].z);
-		++left;
+		uint id = particleIdSSBO[i];
+		maximumX = max(maximumX, posInputSSBO[id].x);
+		minimumX = min(minimumX, posInputSSBO[id].x);
+		maximumY = max(maximumY, posInputSSBO[id].y);
+		minimumY = min(minimumY, posInputSSBO[id].y);
+		maximumZ = max(maximumZ, posInputSSBO[id].z);
+		minimumZ = min(minimumZ, posInputSSBO[id].z);
 	}
+
 	return max(max(maximumX - minimumX, maximumY - minimumY), maximumZ - minimumZ);
 }
 
@@ -58,10 +65,12 @@ vec4 findCenterOfMass(int i, int j)
 	int right = max(i, j);
 	int numberOfChildren = right - left + 1;
 	int totalMass = numberOfChildren * u_ParticleMass;
-	for (int i = 0; i<numberOfChildren; ++i) {
-		centerOfMass.x += (u_ParticleMass * posInputSSBO[left + i].x)/totalMass;
-		centerOfMass.y += (u_ParticleMass * posInputSSBO[left + i].y)/totalMass;
-		centerOfMass.z += (u_ParticleMass * posInputSSBO[left + i].z)/totalMass;
+	for (int i = 0; i < numberOfChildren; ++i) 
+	{
+		uint id = particleIdSSBO[left + i];
+		centerOfMass.x += (u_ParticleMass * posInputSSBO[id].x)/totalMass;
+		centerOfMass.y += (u_ParticleMass * posInputSSBO[id].y)/totalMass;
+		centerOfMass.z += (u_ParticleMass * posInputSSBO[id].z)/totalMass;
 	}
 	return centerOfMass;
 };
@@ -131,21 +140,27 @@ void main()
 	int biggestLeftChild = i + splitPos * direction + min(0, direction);
 	int leftChildIndex;
 	int rightChildIndex;
-	if (min(i, j) == biggestLeftChild) {
+	if (min(i, j) == biggestLeftChild) 
+	{
 		leftChildIndex = biggestLeftChild;
-		treeNodesSSBO[leftChildIndex] = TreeNode_t(posInputSSBO[leftChildIndex], u_ParticleMass, ivec2(-1, -1), 1.0);
+		treeNodesSSBO[leftChildIndex] = TreeNode_t(posInputSSBO[particleIdSSBO[leftChildIndex]], u_ParticleMass, ivec2(-1, -1), 1.0);
 	}
-	else {
+	else 
+	{
 		leftChildIndex = biggestLeftChild + u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt;
 	}
-	if (max(i, j) == biggestLeftChild + 1) {
+	if (max(i, j) == biggestLeftChild + 1) 
+	{
 		rightChildIndex = biggestLeftChild + 1;
-		treeNodesSSBO[rightChildIndex] = TreeNode_t(posInputSSBO[rightChildIndex], u_ParticleMass, ivec2(-1, -1), 1.0);
+		treeNodesSSBO[rightChildIndex] = TreeNode_t(posInputSSBO[particleIdSSBO[rightChildIndex]], u_ParticleMass, ivec2(-1, -1), 1.0);
 	}
-	else {
+	else 
+	{
 		rightChildIndex = biggestLeftChild + 1 + u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt;
 	}
+
 	vec4 centerMass = findCenterOfMass(i, j);
 	float boundingBox = calculateBoundingBox(i, j);
+
 	treeNodesSSBO[u_NumberOfParticlesSqrt * u_NumberOfParticlesSqrt + i] = TreeNode_t(centerMass, l*u_ParticleMass, ivec2(leftChildIndex, rightChildIndex), boundingBox);
 }
