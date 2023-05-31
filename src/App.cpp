@@ -100,7 +100,8 @@ void App::DoFrame(float dt)
     if (m_RunSim)
     {  
         size_t i = 0;
-        if (m_FrameCounter % c_BuildTreeRate == 0) {
+        if (m_FrameCounter % c_BuildTreeRate == 0)
+        {
 
             m_ParticleIds[0]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
             m_ParticleIds[1]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
