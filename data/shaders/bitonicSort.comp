@@ -28,8 +28,8 @@ layout(std430, binding = 4) buffer particleIdBufferOutput
     uint particleIdOutputSSBO[];
 };
 
-uniform uint u_H;
-uniform uint u_Algorithm;
+uniform int u_H;
+uniform int u_Algorithm;
 
 void CompareAndSwap(ivec2 id)
 {
