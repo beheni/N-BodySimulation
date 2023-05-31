@@ -123,16 +123,16 @@ void App::DoFrame(float dt)
         {
             m_SortingProgram->DoFlip(h);
             i++;
-            m_MortonCodesBuffers[m_FrameCounter % 2]->Bind(1); // read
-            m_MortonCodesBuffers[(m_FrameCounter + 1) % 2]->Bind(2); // write
+            m_MortonCodesBuffers[i % 2]->Bind(1); // read
+            m_MortonCodesBuffers[(i + 1) % 2]->Bind(2); // write
             m_ParticleIds[i % 2]->Bind(3); // read
             m_ParticleIds[(i + 1) % 2]->Bind(4); // write
             for (size_t hh = h / 2; hh > 1; hh /= 2)
             {
                 m_SortingProgram->DoDisperse(hh);
                 i++;
-                m_MortonCodesBuffers[m_FrameCounter % 2]->Bind(1); // read
-                m_MortonCodesBuffers[(m_FrameCounter + 1) % 2]->Bind(2); // write
+                m_MortonCodesBuffers[i % 2]->Bind(1); // read
+                m_MortonCodesBuffers[(i + 1) % 2]->Bind(2); // write
                 m_ParticleIds[i % 2]->Bind(3); // read
                 m_ParticleIds[(i + 1) % 2]->Bind(4); // write
             }
