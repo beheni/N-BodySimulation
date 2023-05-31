@@ -130,10 +130,11 @@ void App::DoFrame(float dt)
         m_MortonCodesBuffers[1]->Bind(2); // write
         m_ParticleIds[0]->Bind(3); // read
         m_ParticleIds[1]->Bind(4); // write
-
         size_t i = 0;
         for (size_t h = 2; h <= c_NumberParticlesSqrt * c_NumberParticlesSqrt; h *= 2)
         {
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
             m_SortingProgram->DoFlip(h);
             i++;
             m_MortonCodesBuffers[i % 2]->Bind(1); // read
@@ -142,6 +143,8 @@ void App::DoFrame(float dt)
             m_ParticleIds[(i + 1) % 2]->Bind(4); // write
             for (size_t hh = h / 2; hh > 1; hh /= 2)
             {
+                glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+                glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
                 m_SortingProgram->DoDisperse(hh);
                 i++;
                 m_MortonCodesBuffers[i % 2]->Bind(1); // read
@@ -150,7 +153,8 @@ void App::DoFrame(float dt)
                 m_ParticleIds[(i + 1) % 2]->Bind(4); // write
             }
         }
-        
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
 
         // building tree compute part
         m_BuildingTreeComputeProgram->Use();
