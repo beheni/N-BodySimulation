@@ -98,68 +98,69 @@ void App::Run()
 void App::DoFrame(float dt)
 {
     if (m_RunSim)
-    {
-
-        m_ParticleIds[0]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-        m_ParticleIds[1]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-
-        //m_ParticleIds[0] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-        //m_ParticleIds[1] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-
-        // morton codes compute part
-        m_MortonCodesComputeProgram->Use();
-        m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-        m_ParticleIds[0]->Bind(2);
-        m_MortonCodesBuffers[0]->Bind(3);
-        //m_MortonCodesBuffers[1]->Bind(4);
-        m_MortonCodesComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
-        glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-        
-        // sorting morton codes
-        m_SortingProgram->Use();
-        m_MortonCodesBuffers[0]->Bind(1); // read
-        m_MortonCodesBuffers[1]->Bind(2); // write
-        m_ParticleIds[0]->Bind(3); // read
-        m_ParticleIds[1]->Bind(4); // write
+    {  
         size_t i = 0;
-        for (size_t h = 2; h <= c_NumberParticlesSqrt * c_NumberParticlesSqrt; h *= 2)
-        {
+        if (m_FrameCounter % c_BuildTreeRate == 0) {
+
+            m_ParticleIds[0]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+            m_ParticleIds[1]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+
+            //m_ParticleIds[0] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+            //m_ParticleIds[1] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+
+            // morton codes compute part
+            m_MortonCodesComputeProgram->Use();
+            m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
+            m_ParticleIds[0]->Bind(2);
+            m_MortonCodesBuffers[0]->Bind(3);
+            //m_MortonCodesBuffers[1]->Bind(4);
+            m_MortonCodesComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
+            glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-            glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
-            m_SortingProgram->DoFlip(h);
-            i++;
-            m_MortonCodesBuffers[i % 2]->Bind(1); // read
-            m_MortonCodesBuffers[(i + 1) % 2]->Bind(2); // write
-            m_ParticleIds[i % 2]->Bind(3); // read
-            m_ParticleIds[(i + 1) % 2]->Bind(4); // write
-            for (size_t hh = h / 2; hh > 1; hh /= 2)
+
+
+            // sorting morton codes
+            m_SortingProgram->Use();
+            m_MortonCodesBuffers[0]->Bind(1); // read
+            m_MortonCodesBuffers[1]->Bind(2); // write
+            m_ParticleIds[0]->Bind(3); // read
+            m_ParticleIds[1]->Bind(4); // write
+            for (size_t h = 2; h <= c_NumberParticlesSqrt * c_NumberParticlesSqrt; h *= 2)
             {
                 glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
                 glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
-                m_SortingProgram->DoDisperse(hh);
+                m_SortingProgram->DoFlip(h);
                 i++;
                 m_MortonCodesBuffers[i % 2]->Bind(1); // read
                 m_MortonCodesBuffers[(i + 1) % 2]->Bind(2); // write
                 m_ParticleIds[i % 2]->Bind(3); // read
                 m_ParticleIds[(i + 1) % 2]->Bind(4); // write
+                for (size_t hh = h / 2; hh > 1; hh /= 2)
+                {
+                    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+                    glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
+                    m_SortingProgram->DoDisperse(hh);
+                    i++;
+                    m_MortonCodesBuffers[i % 2]->Bind(1); // read
+                    m_MortonCodesBuffers[(i + 1) % 2]->Bind(2); // write
+                    m_ParticleIds[i % 2]->Bind(3); // read
+                    m_ParticleIds[(i + 1) % 2]->Bind(4); // write
+                }
             }
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
+
+            // building tree compute part
+            m_BuildingTreeComputeProgram->Use();
+            m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
+            m_BuildingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
+            m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
+            m_ParticleIds[(i + 1) % 2]->Bind(2);
+            m_MortonCodesBuffers[(i + 1) % 2]->Bind(3);
+            m_TreeNodesBuffer->Bind(4);
+            glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         }
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
-
-        // building tree compute part
-        m_BuildingTreeComputeProgram->Use();
-        m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
-        m_BuildingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
-        m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-        m_ParticleIds[(i + 1) % 2]->Bind(2);
-        m_MortonCodesBuffers[(i + 1) % 2]->Bind(3);
-        m_TreeNodesBuffer->Bind(4);
-        glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
         // traversing tree compute part
         m_TraversingTreeComputeProgram->Use();
         m_TraversingTreeComputeProgram->SetFloat("u_DeltaTime", dt * m_SimulationSpeed);
