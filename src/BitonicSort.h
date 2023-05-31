@@ -18,7 +18,7 @@ public:
 	void Use();
 	void Sort();
 
-private:
+
 	void DoFlip(uint32_t h);
 	void DoDisperse(uint32_t h);
 

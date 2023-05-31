@@ -41,16 +41,16 @@ void CompareAndSwap(ivec2 id)
 		mortonCodesOutputSSBO[id.x] = rightMorton;
 		mortonCodesOutputSSBO[id.y] = leftMorton;
 
-		//particleIdOutputSSBO[id.x] = particleIdInputSSBO[id.y];
-		//particleIdOutputSSBO[id.y] = particleIdInputSSBO[id.x];
+		particleIdOutputSSBO[id.x] = particleIdInputSSBO[id.y];
+		particleIdOutputSSBO[id.y] = particleIdInputSSBO[id.x];
 	}
 	else
 	{
 		mortonCodesOutputSSBO[id.x] = leftMorton;
 		mortonCodesOutputSSBO[id.y] = rightMorton;
 
-		//particleIdOutputSSBO[id.x] = particleIdInputSSBO[id.x];
-		//particleIdOutputSSBO[id.y] = particleIdInputSSBO[id.y];
+		particleIdOutputSSBO[id.x] = particleIdInputSSBO[id.x];
+		particleIdOutputSSBO[id.y] = particleIdInputSSBO[id.y];
 	}
 }
 

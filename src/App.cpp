@@ -105,7 +105,7 @@ void App::DoFrame(float dt)
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
         m_ParticleIds[0]->Bind(2);
         m_MortonCodesBuffers[0]->Bind(3);
-        m_MortonCodesBuffers[1]->Bind(4);
+        //m_MortonCodesBuffers[1]->Bind(4);
         m_MortonCodesComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
         glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -117,7 +117,26 @@ void App::DoFrame(float dt)
         m_MortonCodesBuffers[1]->Bind(2); // write
         m_ParticleIds[0]->Bind(3); // read
         m_ParticleIds[1]->Bind(4); // write
-        m_SortingProgram->Sort();
+
+        size_t i = 0;
+        for (size_t h = 2; h <= c_NumberParticlesSqrt * c_NumberParticlesSqrt; h *= 2)
+        {
+            m_SortingProgram->DoFlip(h);
+            i++;
+            m_MortonCodesBuffers[m_FrameCounter % 2]->Bind(1); // read
+            m_MortonCodesBuffers[(m_FrameCounter + 1) % 2]->Bind(2); // write
+            m_ParticleIds[i % 2]->Bind(3); // read
+            m_ParticleIds[(i + 1) % 2]->Bind(4); // write
+            for (size_t hh = h / 2; hh > 1; hh /= 2)
+            {
+                m_SortingProgram->DoDisperse(hh);
+                i++;
+                m_MortonCodesBuffers[m_FrameCounter % 2]->Bind(1); // read
+                m_MortonCodesBuffers[(m_FrameCounter + 1) % 2]->Bind(2); // write
+                m_ParticleIds[i % 2]->Bind(3); // read
+                m_ParticleIds[(i + 1) % 2]->Bind(4); // write
+            }
+        }
         
 
         // building tree compute part
