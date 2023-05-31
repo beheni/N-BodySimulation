@@ -106,8 +106,12 @@ void App::DoFrame(float dt)
         {
             particlesIds[i] = i;
         }
-        m_ParticleIds[0] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-        m_ParticleIds[1] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+
+        m_ParticleIds[0]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+        m_ParticleIds[1]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+
+        //m_ParticleIds[0] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+        //m_ParticleIds[1] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
 
         // morton codes compute part
         m_MortonCodesComputeProgram->Use();

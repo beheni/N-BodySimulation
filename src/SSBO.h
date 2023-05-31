@@ -12,6 +12,7 @@ public:
 
 	void Bind(unsigned int slot = 0) const;
 	void Unbind() const;
+	void SetData(Type* data, unsigned int size);
 
 private:
 	GLuint m_BufferID;
@@ -50,5 +51,13 @@ void SSBO<Type>::Bind(unsigned int slot) const
 template<typename Type>
 void SSBO<Type>::Unbind() const
 {
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+template<typename Type>
+void SSBO<Type>::SetData(Type* data, unsigned int size)
+{
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->m_BufferID);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Type) * size, data, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }

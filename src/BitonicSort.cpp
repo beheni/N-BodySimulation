@@ -12,7 +12,7 @@ BitonicSort::BitonicSort(const std::string& shaderFile, size_t numberOfElements)
     //while (m_MaxComputeWorkGroupSize * 2 < workGroupSizeHardwareLimit)
     //    m_MaxComputeWorkGroupSize *= 2;
 
-    m_WorkGroupCount = m_NumberOfElemetes / 1024;
+    m_WorkGroupCount = m_NumberOfElemetes / 512;
 }
 
 void BitonicSort::Use()
