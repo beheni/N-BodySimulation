@@ -157,8 +157,8 @@ void App::DoFrame(float dt)
         m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
         m_BuildingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
         m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
-        m_ParticleIds[1]->Bind(2);
-        m_MortonCodesBuffers[1]->Bind(3);
+        m_ParticleIds[(i + 1) % 2]->Bind(2);
+        m_MortonCodesBuffers[(i + 1) % 2]->Bind(3);
         m_TreeNodesBuffer->Bind(4);
         glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -173,7 +173,7 @@ void App::DoFrame(float dt)
         m_PositionBuffers[(m_FrameCounter + 1)  % 2]->Bind(2); // write
         m_VelocityBuffers[m_FrameCounter        % 2]->Bind(3); // read
         m_VelocityBuffers[(m_FrameCounter + 1)  % 2]->Bind(4); // write
-        m_ParticleIds[1]->Bind(5);
+        m_ParticleIds[(i + 1) % 2]->Bind(5);
         m_TreeNodesBuffer->Bind(6);
         glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
