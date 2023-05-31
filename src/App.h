@@ -34,7 +34,9 @@ private:
 private:
 	const glm::vec3 c_GeneralBoundingBox = {100.0f, 100.0f, 100.0f};
 	const size_t c_NumberParticlesSqrt = 64;
-	const size_t c_ParticleMass = 300;
+	const size_t c_ParticleMass = 30000;
+
+	std::vector<unsigned int> particlesIds = std::vector<unsigned int> (c_NumberParticlesSqrt * c_NumberParticlesSqrt);
 
 	float m_SimulationSpeed = 1.0f;
 	bool m_RunSim = false;

@@ -43,7 +43,6 @@ App::App()
     std::uniform_real_distribution<float> distZ(-10, 10);
     std::default_random_engine eng(4);
 #endif
-    std::vector<unsigned int> particlesIds(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
     for (size_t i = 0; i < c_NumberParticlesSqrt * c_NumberParticlesSqrt; i++)
     {
         glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
@@ -100,12 +99,6 @@ void App::DoFrame(float dt)
 {
     if (m_RunSim)
     {
-        std::vector<unsigned int> particlesIds(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-
-        for (size_t i = 0; i < c_NumberParticlesSqrt * c_NumberParticlesSqrt; i++)
-        {
-            particlesIds[i] = i;
-        }
 
         m_ParticleIds[0]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
         m_ParticleIds[1]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
