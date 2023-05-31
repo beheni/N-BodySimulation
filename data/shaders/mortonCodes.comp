@@ -49,5 +49,5 @@ void main()
    uint id = particleIdSSBO[gl_GlobalInvocationID.x];
    vec3 position = positionsSSBO[id];
    uint mortonCode = morton3D(position.x, position.y, position.z);
-   mortonCodesSSBO[gl_GlobalInvocationID.x] = mortonCode;
+   mortonCodesSSBO[id] = mortonCode;
 }
