@@ -32,6 +32,12 @@ public:
             ImGui::SliderFloat(LabelPrefix(label).c_str(), value, minValue, maxValue);
             });
     }
+    void AddSliderInt(const std::string& label, int* value, int minValue, int maxValue)
+    {
+        m_Widgets.emplace_back([label, value, minValue, maxValue] {
+            ImGui::SliderInt(LabelPrefix(label).c_str(), value, minValue, maxValue);
+            });
+    }
     void AddCheckbox(const std::string& label, bool* value) 
     {
         m_Widgets.emplace_back([label, value] {
@@ -43,6 +49,44 @@ public:
         m_Widgets.emplace_back([label] {
             ImGui::Text(label.c_str());
             });
+    }
+    void AddCombo(const std::string& label, const std::vector<std::string>& items, std::string* pSelectedItem, std::function<void()> callback)
+    {
+        int selectedIndex = 0;
+        int lastSelectedIndex = 0;
+        m_Widgets.emplace_back([label,
+            comboItems = items,
+            selectedIndex = selectedIndex,          // This variable is static, but different for every lambda instance
+            lastSelectedIndex = lastSelectedIndex,  // This variable is static, but different for every lambda instance
+            pSelectedItem, callback] 
+            () mutable {
+            if (comboItems.empty())
+            {
+                comboItems.push_back("[no items to select]");
+            }
+
+            if (ImGui::BeginCombo(LabelPrefix(label).c_str(), comboItems[selectedIndex].c_str()))
+            {
+                for (int i = 0; i < comboItems.size(); i++)
+                {
+                    bool isSelected = (i == selectedIndex);
+                    if (ImGui::Selectable(comboItems[i].c_str(), isSelected))
+                    {
+                        *pSelectedItem = comboItems[i];
+                        selectedIndex = i;
+                    }
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            if (selectedIndex != lastSelectedIndex)
+            {
+                lastSelectedIndex = selectedIndex;
+                callback();
+            }
+        });
     }
 
     void Render();

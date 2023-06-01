@@ -11,5 +11,5 @@ void main()
 {
 	//vec4 color = texture(u_Texture, v_TexCoord);
 	//if (color.a < 0.15) discard;
-	v_FragColor = vec4(v_Color, 1.0);
+	v_FragColor = vec4(v_Color, 0.2);
 }

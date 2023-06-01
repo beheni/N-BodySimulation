@@ -31,17 +31,16 @@ private:
 	void ProcessEvents(float dt);
 	void PollEvents(float dt);
 
+	void RegenerateState();
+
 private:
-	const glm::vec3 c_GeneralBoundingBox = {100.0f, 100.0f, 100.0f};
-	const size_t c_NumberParticlesSqrt = 512;
-	const size_t c_ParticleMass = 300;
-	const size_t c_BuildTreeRate = 5;
+	const glm::vec3 c_GeneralBoundingBox = { 100.0f, 100.0f, 100.0f };
 
-	std::vector<unsigned int> particlesIds = std::vector<unsigned int> (c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-
-	float m_SimulationSpeed = 1.0f;
+	float m_SimulationSpeed = 0.1f;
 	bool m_RunSim = false;
 	bool m_Rotate = false;
+
+	std::vector<unsigned int> particlesIds;
 
 	float m_Time;
 	Clock m_Clock;
@@ -75,4 +74,12 @@ private:
 	std::vector<std::unique_ptr<SSBO<unsigned int>>> m_MortonCodesBuffers;
 	std::vector<std::unique_ptr<SSBO<unsigned int>>> m_ParticleIds;
 	std::unique_ptr<SSBO<TreeNode_t>> m_TreeNodesBuffer;
+
+	struct
+	{
+		std::string selectedStarsCountStr = "64";
+		int starsCountSqrt = 128;
+		int particleMass = 1000;
+		int buildTreeRate = 5;
+	} m_SimParams;
 };

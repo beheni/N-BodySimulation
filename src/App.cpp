@@ -1,7 +1,6 @@
 #include "App.h"
 #include <random>
 
-
 App::App()
 {
     glfwInit();
@@ -16,51 +15,24 @@ App::App()
     m_MortonCodesComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/mortonCodes.comp");
     m_BuildingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/buildingTree.comp");
     m_TraversingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/traversingTree.comp");
-    m_SortingProgram = std::make_unique<BitonicSort>("./data/shaders/bitonicSort.comp", c_NumberParticlesSqrt * c_NumberParticlesSqrt);
     m_Texture = std::make_unique<Texture>("./data/textures/star.png");
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 400.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
-    m_Mesh = std::make_unique<Mesh>(c_NumberParticlesSqrt * c_NumberParticlesSqrt, -80, 80);
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 40.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 2000.0f);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
     m_Menu = std::make_unique<Menu>("Menu", m_Window->Get());
 
     Menu::EmbraceTheDarkness();
-    m_Menu->AddSliderFloat("Speed", &m_SimulationSpeed, 0.1f, 5.0f);
+    m_Menu->AddSliderFloat("Speed", &m_SimulationSpeed, 0.001f, 1.0f);
     m_Menu->AddCheckbox("Simulation", &m_RunSim);
     m_Menu->AddCheckbox("Rotation", &m_Rotate);
     m_Menu->AddButton("Enter FlyCam Mode", [this] {m_Mouse->DisableCursor(m_Window->Get()); });
-    m_Menu->AddText("[press TAB - to exit]");
-    m_Menu->AddText("['WASD' for control ]");
+    m_Menu->AddCombo("Start count sqrt", { "64", "128", "256", "512", "1024", "2048" }, &m_SimParams.selectedStarsCountStr, [this] {
+            m_SimParams.starsCountSqrt = std::stoi(m_SimParams.selectedStarsCountStr);
+        });
+    m_Menu->AddSliderInt("Star mass", &m_SimParams.particleMass, 10, 10000);
+    m_Menu->AddSliderInt("Build tree rate", &m_SimParams.buildTreeRate, 1, 10);
+    m_Menu->AddButton("Regenerate", [this] {RegenerateState(); });
 
-    std::vector<glm::vec4> data(c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-#if 1
-    std::normal_distribution<float> distX(0, 10);
-    std::normal_distribution<float> distY(0, 10);
-    std::normal_distribution<float> distZ(0, 10);
-    std::default_random_engine eng(3);
-#else
-    std::uniform_real_distribution<float> distX(-10, 10);
-    std::uniform_real_distribution<float> distY(-10, 10);
-    std::uniform_real_distribution<float> distZ(-10, 10);
-    std::default_random_engine eng(4);
-#endif
-    for (size_t i = 0; i < c_NumberParticlesSqrt * c_NumberParticlesSqrt; i++)
-    {
-        glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
-        data[i] = glm::vec4(pos.x, pos.y, pos.z, 0.0f);
-        particlesIds[i] = i;
-    }
-    m_PositionBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.data(), data.size()));
-    m_PositionBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.data(), data.size()));
-    m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
-    m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.size()));
-
-    m_MortonCodesBuffers.emplace_back(std::make_unique<SSBO<unsigned int>>( c_NumberParticlesSqrt * c_NumberParticlesSqrt));
-    m_MortonCodesBuffers.emplace_back(std::make_unique<SSBO<unsigned int>>(c_NumberParticlesSqrt * c_NumberParticlesSqrt));
-    m_ParticleIds.emplace_back(std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt));
-    m_ParticleIds.emplace_back(std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt));
-
-    std::vector<TreeNode_t> treeNodesSSBO(2 * (c_NumberParticlesSqrt * c_NumberParticlesSqrt) - 1);
-    m_TreeNodesBuffer = std::make_unique<SSBO<TreeNode_t>>(treeNodesSSBO.data(), treeNodesSSBO.size());
+    RegenerateState();
 }
 
 App::~App()
@@ -97,6 +69,7 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
+    size_t starsCount = m_SimParams.starsCountSqrt * m_SimParams.starsCountSqrt;
 
     // render part
     int bufferIndex = (m_RunSim ? (m_FrameCounter) : 0);
@@ -110,10 +83,7 @@ void App::DoFrame(float dt)
     m_Time = (m_Rotate ? m_Time + dt : m_Time);
     auto model = glm::rotate(glm::identity<glm::mat4x4>(), m_Time, glm::vec3(0, 1, 0));
     m_RenderProgram->SetMat4x4("u_Model", model);
-    //m_RenderProgram->SetInt("u_Texture", 0);
     m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
-    //m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());
-    //m_RenderProgram->SetFvec3("u_CameraPosition", m_Camera->GetPosition());
 
     m_Window->Clear(0.05f, 0.05f, 0.1f);
     m_Mesh->Draw();
@@ -121,13 +91,10 @@ void App::DoFrame(float dt)
     if (m_RunSim)
     {  
         size_t i = 0;
-        if (m_FrameCounter % c_BuildTreeRate == 0) {
+        if (m_FrameCounter % m_SimParams.buildTreeRate == 0) {
 
-            m_ParticleIds[0]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-            m_ParticleIds[1]->SetData(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-
-            //m_ParticleIds[0] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
-            //m_ParticleIds[1] = std::make_unique<SSBO<unsigned int>>(particlesIds.data(), c_NumberParticlesSqrt * c_NumberParticlesSqrt);
+            m_ParticleIds[0]->SetData(particlesIds.data(), starsCount);
+            m_ParticleIds[1]->SetData(particlesIds.data(), starsCount);
 
             // morton codes compute part
             m_MortonCodesComputeProgram->Use();
@@ -136,7 +103,7 @@ void App::DoFrame(float dt)
             m_MortonCodesBuffers[0]->Bind(3);
             //m_MortonCodesBuffers[1]->Bind(4);
             m_MortonCodesComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
-            glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
+            glDispatchCompute(starsCount / 32, 1, 1);
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 
@@ -146,7 +113,7 @@ void App::DoFrame(float dt)
             m_MortonCodesBuffers[1]->Bind(2); // write
             m_ParticleIds[0]->Bind(3); // read
             m_ParticleIds[1]->Bind(4); // write
-            for (size_t h = 2; h <= c_NumberParticlesSqrt * c_NumberParticlesSqrt; h *= 2)
+            for (size_t h = 2; h <= starsCount; h *= 2)
             {
                 glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
                 glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
@@ -173,31 +140,30 @@ void App::DoFrame(float dt)
 
             // building tree compute part
             m_BuildingTreeComputeProgram->Use();
-            m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
-            m_BuildingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
+            m_BuildingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", m_SimParams.starsCountSqrt);
+            m_BuildingTreeComputeProgram->SetInt("u_ParticleMass", m_SimParams.particleMass);
             m_PositionBuffers[m_FrameCounter % 2]->Bind(1);
             m_ParticleIds[(i + 1) % 2]->Bind(2);
             m_MortonCodesBuffers[(i + 1) % 2]->Bind(3);
             m_TreeNodesBuffer->Bind(4);
-            glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
+            glDispatchCompute(starsCount / 32, 1, 1);
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         }
         // traversing tree compute part
         m_TraversingTreeComputeProgram->Use();
-        m_TraversingTreeComputeProgram->SetFloat("u_DeltaTime", dt * m_SimulationSpeed);
+        m_TraversingTreeComputeProgram->SetFloat("u_DeltaTime", m_SimulationSpeed / 100.0f);
         m_TraversingTreeComputeProgram->SetFvec3("u_BoundingBox", c_GeneralBoundingBox);
-        m_TraversingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", c_NumberParticlesSqrt);
-        m_TraversingTreeComputeProgram->SetInt("u_ParticleMass", c_ParticleMass);
+        m_TraversingTreeComputeProgram->SetInt("u_NumberOfParticlesSqrt", m_SimParams.starsCountSqrt);
+        m_TraversingTreeComputeProgram->SetInt("u_ParticleMass", m_SimParams.particleMass);
         m_PositionBuffers[m_FrameCounter        % 2]->Bind(1); // read
         m_PositionBuffers[(m_FrameCounter + 1)  % 2]->Bind(2); // write
         m_VelocityBuffers[m_FrameCounter        % 2]->Bind(3); // read
         m_VelocityBuffers[(m_FrameCounter + 1)  % 2]->Bind(4); // write
         m_ParticleIds[(i + 1) % 2]->Bind(5);
         m_TreeNodesBuffer->Bind(6);
-        glDispatchCompute(c_NumberParticlesSqrt * c_NumberParticlesSqrt / 32, 1, 1);
+        glDispatchCompute(starsCount / 32, 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     }
-
 }
 
 void App::ProcessEvents(float dt)
@@ -232,4 +198,54 @@ void App::ProcessEvents(float dt)
 void App::PollEvents(float dt)
 {
     glfwPollEvents();
+}
+
+void App::RegenerateState()
+{
+    size_t starsCount = m_SimParams.starsCountSqrt * m_SimParams.starsCountSqrt;
+
+    m_SortingProgram = std::make_unique<BitonicSort>("./data/shaders/bitonicSort.comp", starsCount);
+    m_Mesh = std::make_unique<Mesh>(starsCount, -80, 80);
+    std::vector<glm::vec4> data(starsCount);
+    std::vector<glm::vec4> vel(starsCount);
+    particlesIds.resize(starsCount);
+
+#if 1
+    std::normal_distribution<float> distX(0, 5);
+    std::normal_distribution<float> distY(0, 1);
+    std::normal_distribution<float> distZ(0, 5);
+    std::default_random_engine eng(3);
+#else
+    std::uniform_real_distribution<float> distX(-50, 50);
+    std::uniform_real_distribution<float> distY(-50, 50);
+    std::uniform_real_distribution<float> distZ(-50, 50);
+    std::default_random_engine eng(4);
+#endif
+    for (size_t i = 0; i < starsCount; i++)
+    {
+        glm::vec3 pos = { distX(eng), distY(eng), distZ(eng) };
+        data[i] = glm::vec4(pos.x, pos.y, pos.z, 0.0f);
+
+        float scale = sqrt(pos.x * pos.x + pos.z * pos.z);// / (10.0f * (float(rand() % 50 + 1) / 10));
+
+        vel[i] = glm::vec4(pos.z / scale, 0.0f, -pos.x / scale, 0.0f);
+        particlesIds[i] = i;
+    }
+    m_PositionBuffers.clear();
+    m_VelocityBuffers.clear();
+    m_MortonCodesBuffers.clear();
+    m_ParticleIds.clear();
+
+    m_PositionBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.data(), data.size()));
+    m_PositionBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(data.data(), data.size()));
+    m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(vel.data(), vel.size()));
+    m_VelocityBuffers.emplace_back(std::make_unique<SSBO<glm::vec4>>(vel.data(), vel.size()));
+
+    m_MortonCodesBuffers.emplace_back(std::make_unique<SSBO<unsigned int>>(starsCount));
+    m_MortonCodesBuffers.emplace_back(std::make_unique<SSBO<unsigned int>>(starsCount));
+    m_ParticleIds.emplace_back(std::make_unique<SSBO<unsigned int>>(particlesIds.data(), starsCount));
+    m_ParticleIds.emplace_back(std::make_unique<SSBO<unsigned int>>(particlesIds.data(), starsCount));
+
+    std::vector<TreeNode_t> treeNodesSSBO(2 * (starsCount) - 1);
+    m_TreeNodesBuffer = std::make_unique<SSBO<TreeNode_t>>(treeNodesSSBO.data(), treeNodesSSBO.size());
 }

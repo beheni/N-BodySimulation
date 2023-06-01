@@ -41,6 +41,7 @@ uniform int     u_ParticleMass;
 uniform int     u_NumberOfParticlesSqrt;
 
 float G = 6.6743 * pow(10, -11);
+float g_Softening = 1.0f;
 
 bool considerSingleBody(vec4 curNodePosition, vec4 centerOfMass, float boundingBoxMetric)
 {
@@ -91,7 +92,7 @@ void main()
         {
         // TODO-FIX: veeeery crappy physics calculations
             vec4 pathVec = curNode.centerOfMass - position;
-            float dist = length(pathVec) + 1;
+            float dist = length(pathVec) + g_Softening;
             float invDistCub = 1.0 / (dist * dist * dist);
 
             pathVec = pathVec * curNode.totalMass * invDistCub;
@@ -111,11 +112,9 @@ void main()
     velocity = velocity + f;
     position = position + velocity * u_DeltaTime;  
 
-    if(abs(position.x) > u_BoundingBox.x || 
-       abs(position.y) > u_BoundingBox.y ||
-       abs(position.z) > u_BoundingBox.z)
+    if(length(position) > u_BoundingBox.x) 
     {
-        //position = vec4(0, 0, 0, 0);
+        //position = vec4(0, 0, 0, 1.0);
         velocity = velocity * vec4(-1,-1,-1,-1);
         position = position + velocity * u_DeltaTime;  
     }

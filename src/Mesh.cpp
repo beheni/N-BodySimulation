@@ -30,7 +30,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
 
     for (int i = 0; i < quadsNumber; i++)
     {
-        vertices.emplace_back(i, 0.0f, 0.0f, 0.0f, 1.0, 1.0, 1.0, 0.0f, 0.0f);
+        vertices.emplace_back(i, 0.0f, 0.0f, 0.0f, 0.65f, 0.35f, 0.1f, 0.0f, 0.0f);
     }
 
     glGenBuffers(1, &m_VBO);
