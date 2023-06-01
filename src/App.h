@@ -33,7 +33,7 @@ private:
 
 private:
 	const glm::vec3 c_GeneralBoundingBox = {100.0f, 100.0f, 100.0f};
-	const size_t c_NumberParticlesSqrt = 128;
+	const size_t c_NumberParticlesSqrt = 512;
 	const size_t c_ParticleMass = 300;
 	const size_t c_BuildTreeRate = 5;
 

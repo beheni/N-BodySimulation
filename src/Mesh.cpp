@@ -16,7 +16,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
         Vertex() = default;
         Vertex(float id, float x, float y, float z, float r, float g, float b, float u, float v)
             :
-            id(id   ), position({ x, y, z }), color({ r, g, b }), texCoord({ u, v })
+            id(id), position({ x, y, z }), color({ r, g, b }), texCoord({ u, v })
         {}
         
         glm::vec3 position;
@@ -30,13 +30,7 @@ Mesh::Mesh(size_t quadsNumber, float min, float max)
 
     for (int i = 0; i < quadsNumber; i++)
     {
-        vertices.emplace_back(i, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
-        vertices.emplace_back(i,  0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0, 1.0f, 0.0f);
-        vertices.emplace_back(i,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
-                             
-        vertices.emplace_back(i,  0.5f,  0.5f, 0.0f, 0.0, 0.0, 1.0, 1.0f, 1.0f);
-        vertices.emplace_back(i, -0.5f,  0.5f, 0.0f, 0.0, 1.0, 0.0, 0.0f, 1.0f);
-        vertices.emplace_back(i, -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0, 0.0f, 0.0f);
+        vertices.emplace_back(i, 0.0f, 0.0f, 0.0f, 1.0, 1.0, 1.0, 0.0f, 0.0f);
     }
 
     glGenBuffers(1, &m_VBO);
@@ -59,5 +53,5 @@ Mesh::~Mesh()
 
 void Mesh::Draw()
 {
-	glDrawArrays(GL_TRIANGLES, 0, 6 * m_QuadsNumber);
+	glDrawArrays(GL_POINTS, 0, m_QuadsNumber);
 }

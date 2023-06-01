@@ -18,7 +18,7 @@ App::App()
     m_TraversingTreeComputeProgram = std::make_unique<ComputeProgram>("./data/shaders/traversingTree.comp");
     m_SortingProgram = std::make_unique<BitonicSort>("./data/shaders/bitonicSort.comp", c_NumberParticlesSqrt * c_NumberParticlesSqrt);
     m_Texture = std::make_unique<Texture>("./data/textures/star.png");
-    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 150.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
+    m_Camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 400.0f), 75.0f, m_Window->GetAspectRation(), 0.1f, 1000.0f);
     m_Mesh = std::make_unique<Mesh>(c_NumberParticlesSqrt * c_NumberParticlesSqrt, -80, 80);
     m_Mouse = std::make_unique<Mouse>(m_Window->Get());
     m_Menu = std::make_unique<Menu>("Menu", m_Window->Get());
@@ -97,6 +97,27 @@ void App::Run()
 
 void App::DoFrame(float dt)
 {
+
+    // render part
+    int bufferIndex = (m_RunSim ? (m_FrameCounter) : 0);
+    m_RenderProgram->Use();
+
+    m_Texture->Bind(0);
+
+    m_PositionBuffers[bufferIndex % 2]->Bind(1);
+    m_PositionBuffers[(bufferIndex + 1) % 2]->Bind(2);
+
+    m_Time = (m_Rotate ? m_Time + dt : m_Time);
+    auto model = glm::rotate(glm::identity<glm::mat4x4>(), m_Time, glm::vec3(0, 1, 0));
+    m_RenderProgram->SetMat4x4("u_Model", model);
+    //m_RenderProgram->SetInt("u_Texture", 0);
+    m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
+    //m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());
+    //m_RenderProgram->SetFvec3("u_CameraPosition", m_Camera->GetPosition());
+
+    m_Window->Clear(0.05f, 0.05f, 0.1f);
+    m_Mesh->Draw();
+    m_FrameCounter++;
     if (m_RunSim)
     {  
         size_t i = 0;
@@ -177,26 +198,6 @@ void App::DoFrame(float dt)
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     }
 
-    // render part
-    int bufferIndex = (m_RunSim ? (m_FrameCounter) : 0);
-    m_RenderProgram->Use();
-
-    m_Texture->Bind(0);
-
-    m_PositionBuffers[bufferIndex % 2]      ->Bind(1);
-    m_PositionBuffers[(bufferIndex + 1) % 2]->Bind(2);
-
-    m_Time = (m_Rotate ? m_Time + dt : m_Time);
-    auto model = glm::rotate(glm::identity<glm::mat4x4>(), m_Time, glm::vec3(0, 1, 0));
-    m_RenderProgram->SetMat4x4("u_Model", model);
-    m_RenderProgram->SetInt("u_Texture", 0);
-    m_RenderProgram->SetMat4x4("u_ProjView", m_Camera->GetProjectionMatrix() * m_Camera->GetViewMatrix());
-    m_RenderProgram->SetMat4x4("u_CameraRotation", m_Camera->GetRotationMatrix());
-    //m_RenderProgram->SetFvec3("u_CameraPosition", m_Camera->GetPosition());
-
-    m_Window->Clear(0.05f, 0.05f, 0.1f);
-    m_Mesh->Draw();
-    m_FrameCounter++;
 }
 
 void App::ProcessEvents(float dt)

@@ -24,10 +24,11 @@ void main()
 	vec4 starLocation = u_Model * translation;
 
 	//float scale = length(starLocation.xyz - u_CameraPosition) / 400.0f;
-	vec4 position = u_CameraRotation * vec4(a_Pos, 0.2) + starLocation;
+	//vec4 position = u_CameraRotation * vec4(a_Pos, 0.2) + starLocation;
 	//vec4 position = u_CameraRotation * vec4(a_Pos * scale, 0.2) + starLocation;
 
-	gl_Position = u_ProjView * position;
+	//gl_Position = u_ProjView * position;
+	gl_Position = u_ProjView * vec4(starLocation.xyz, 1.0f);
 	v_Color	= a_Color;
 	v_TexCoord = a_TexCoord;
 }
